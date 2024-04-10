@@ -10,15 +10,22 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
+   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MyTube2',
-      theme: ThemeData(
-       
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Home()
+    return SafeArea(
+      child: MaterialApp(
+        // debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/home',
+        routes: <String, WidgetBuilder>{
+          '/home': (BuildContext context) => Home(),
+          // '/swing': (BuildContext context) => Swing(),
+        },
+
+      )
     );
   }
 }
+// bool dirty = await Navigator.of(context).pushNamed('/swing') as bool;
