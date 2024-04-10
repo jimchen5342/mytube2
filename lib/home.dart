@@ -43,6 +43,7 @@ class _HomeState extends State<Home> {
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
     // https://pub.dev/packages/device_info_plus/example
+    // version.sdkInt: 25, version.release: 7.1.1
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,
