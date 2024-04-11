@@ -1,4 +1,4 @@
-package com.flutter.mytube2.mytube2;
+package com.flutter.mytube2;
 
 import io.flutter.embedding.android.FlutterActivity;
 

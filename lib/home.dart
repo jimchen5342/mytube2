@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool permission = false;
+  WebViewController? webViewController;
 
  @override
   void initState() {
@@ -36,12 +38,9 @@ class _HomeState extends State<Home> {
     var status = build.version.sdkInt < 30 
       ? await Permission.storage.status
       : await Permission.manageExternalStorage.status;
-    print("storage: " + status.isGranted.toString());
     permission = status.isGranted;
     setState(() {});
-
-    writeFile();
-
+    // writeFile();
   }
 
   writeFile() async { // 測好了，可以用
@@ -60,7 +59,7 @@ class _HomeState extends State<Home> {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    initial();
+    // initial();
   }
 
   @override
@@ -76,7 +75,11 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      child: (permission == false)  ? null : Text('MyTube')
+      child: (permission == false)  ? null : web()
     );
+  }
+
+  Widget web() {
+    return Container();
   }
 }
