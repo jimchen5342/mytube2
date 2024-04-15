@@ -8,6 +8,7 @@ import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -56,6 +57,16 @@ class _HomeState extends State<Home> {
               //   debugPrint('blocking navigation to ${request.url}');
               //   return NavigationDecision.prevent;
               // }
+              Fluttertoast.showToast(
+                  msg: 'allowing navigation to ${request.url}',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
+              
               print('allowing navigation to ${request.url}');
               return NavigationDecision.navigate;
             },
