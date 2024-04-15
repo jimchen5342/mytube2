@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
@@ -18,39 +19,60 @@ class _HomeState extends State<Home> {
   bool permission = false;
   late final WebViewController _controller;
 
- @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await initial();
 
       final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
             const PlatformWebViewControllerCreationParams());
 
-    controller
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
-            // context.read<WebviewManager>().changeLoadingProgress(progress);
-          },
-          onPageStarted: (String url) {
-            // context.read<WebviewManager>().changeLoadingStatus(true);
-          },
-          onPageFinished: (String url) {
-            // context.read<WebviewManager>().changeLoadingStatus(false);
-          },
-          onWebResourceError: (WebResourceError error) {
-            // context
-            //     .read<DialogManager>()
-            //     .setErrorDialog(error, DialogType.webviewError);
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse("https://www.youtube.com"));
+      if (controller.platform is AndroidWebViewController) {
+        AndroidWebViewController.enableDebugging(true);
+        (controller.platform as AndroidWebViewController)
+            .setMediaPlaybackRequiresUserGesture(false);
+      }
+      controller
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: (int progress) {
+              // context.read<WebviewManager>().changeLoadingProgress(progress);
+              print("onProgress: $progress");
+            },
+            onPageStarted: (String url) {
+              // context.read<WebviewManager>().changeLoadingStatus(true);
+              print("onPageStarted: $url");
+            },
+            onPageFinished: (String url) {
+              print("onPageFinished: $url");
+            },
+            onWebResourceError: (WebResourceError error) {
+             
+            },
+            onNavigationRequest: (NavigationRequest request) {
+              // if (request.url.startsWith('https://www.youtube.com/')) {
+              //   debugPrint('blocking navigation to ${request.url}');
+              //   return NavigationDecision.prevent;
+              // }
+              print('allowing navigation to ${request.url}');
+              return NavigationDecision.navigate;
+            },
+            onUrlChange: (UrlChange change) {
+              print('url change to ${change.url}');
+            },
+            onHttpAuthRequest: (HttpAuthRequest request) {
+              // openDialog(request);
+            },
+          ),
+        )
+        ..loadRequest(Uri.parse("https://m.youtube.com/"));
 
-    _controller = controller;
+      _controller = controller;
+      // _controller.runJavaScript(javaScript)
+
+      await initial();
     });
   }
 
@@ -88,6 +110,12 @@ class _HomeState extends State<Home> {
   void reassemble() async { // develope mode
     super.reassemble();
     // initial();
+    debugPrint("test");
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      
+        // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
+    }); 
   }
 
   @override
@@ -103,11 +131,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      child: (permission == false)  ? null : web()
+      child: (permission == false)  ? null : WebViewWidget(controller: _controller)
     );
-  }
-
-  Widget web() {
-    return WebViewWidget(controller: _controller);
   }
 }
