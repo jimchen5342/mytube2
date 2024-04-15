@@ -34,7 +34,7 @@ dependencies:
   permission_handler: ^11.3.1 #https://pub.dartlang.org/packages/permission_handler
   shared_preferences: ^2.2.2
   webview_flutter: ^4.2.2
-  device_info_plus: ^9.1.0
+  device_info_plus: ^9.1.2
   external_path: ^1.0.3
 
 dev_dependencies:

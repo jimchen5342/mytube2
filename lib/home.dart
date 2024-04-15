@@ -16,13 +16,41 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool permission = false;
-  WebViewController? webViewController;
+  late final WebViewController _controller;
 
  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await initial();
+
+      final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(
+            const PlatformWebViewControllerCreationParams());
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // context.read<WebviewManager>().changeLoadingProgress(progress);
+          },
+          onPageStarted: (String url) {
+            // context.read<WebviewManager>().changeLoadingStatus(true);
+          },
+          onPageFinished: (String url) {
+            // context.read<WebviewManager>().changeLoadingStatus(false);
+          },
+          onWebResourceError: (WebResourceError error) {
+            // context
+            //     .read<DialogManager>()
+            //     .setErrorDialog(error, DialogType.webviewError);
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse("https://www.youtube.com"));
+
+    _controller = controller;
     });
   }
 
@@ -80,6 +108,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget web() {
-    return Container();
+    return WebViewWidget(controller: _controller);
   }
 }
