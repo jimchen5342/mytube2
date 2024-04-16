@@ -11,7 +11,8 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Home extends StatefulWidget {
-  Home({Key? key}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -39,6 +40,10 @@ class _HomeState extends State<Home> {
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..addJavaScriptChannel("Flutter",
           onMessageReceived: (JavaScriptMessage message) {
+            Map<String, dynamic> obj = jsonDecode(message.message);
+            if (obj["href"] != null) {
+              openPlayer(obj["href"]);
+            }
               // setMessage(message.message);
               print(message.message);
           })
@@ -99,8 +104,8 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void openPlayer() {
-
+  void openPlayer(String href) {
+     Navigator.pushNamed(context, '/player', arguments: href) as bool;
   }
 
   void setLeast() async { // 最新上傳
@@ -191,7 +196,7 @@ class _HomeState extends State<Home> {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    // initial();
+
     Future.delayed(const Duration(milliseconds: 100), () {
       // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
     }); 

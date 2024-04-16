@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytube2/home.dart';
+import 'package:mytube2/player.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,11 +20,10 @@ class MyApp extends StatelessWidget {
         initialRoute: '/home',
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => Home(),
-          // '/swing': (BuildContext context) => Swing(),
+          '/player': (BuildContext context) => Player(),
         },
-
       )
     );
   }
 }
-// bool dirty = await Navigator.of(context).pushNamed('/swing') as bool;
+// bool dirty = await Navigator.pushNamed(context, '/swing', arguments: "") as bool;
