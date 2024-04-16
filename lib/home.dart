@@ -19,6 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool permission = false;
   late final WebViewController _controller;
+  String url = "";
 
   @override
   void initState() {
@@ -36,6 +37,11 @@ class _HomeState extends State<Home> {
       }
       controller
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..addJavaScriptChannel("Flutter",
+          onMessageReceived: (JavaScriptMessage message) {
+              // setMessage(message.message);
+              print(message.message);
+          })
         ..setNavigationDelegate(
           NavigationDelegate(
             onProgress: (int progress) {
@@ -44,20 +50,24 @@ class _HomeState extends State<Home> {
             onPageStarted: (String url) {
               print("onPageStarted: $url");
             },
-            onPageFinished: (String url) {
+            onPageFinished: (String url) async {
               print("onPageFinished: $url");
-              if(url == "https://m.youtube.com/" ) { // a.large-media-item-thumbnail-container
+              if(this.url == url ) return;
+              this.url = url;
+              if(url == "https://m.youtube.com/" ) {
+                setLeast();
                 setAnchorClick("a.media-item-thumbnail-container");
-              } else if(url.indexOf("/feed/subscriptions") > -1) {
+              } else if(url.contains("/feed/subscriptions")) {
                 setAnchorClick(".item a"); // compact-media-item
-              } else if(url.indexOf("/channel/") > -1) {
+              } else if(url.contains("/channel/")) {
                 setAnchorClick(".item a");
-              } else if(url.indexOf("/user/") > -1) {
+              } else if(url.contains("/user/")) {
                 setAnchorClick(".compact-media-item a"); // 
-              } else if(url.indexOf("playlist?list=") > -1) {
+              } else if(url.contains("playlist?list=")) {
                 setAnchorClick("a.compact-media-item-image"); 
-              } else if(url.indexOf("#") > -1){
-              } else if(url.indexOf("/feed/library") > -1 || url.indexOf("/feed/channels") > -1) {
+              } else if(url.contains("#")){
+                
+              } else if(url.contains("/feed/library") || url.contains("/feed/channels")) {
               
               }     
             },
@@ -65,21 +75,11 @@ class _HomeState extends State<Home> {
              
             },
             onNavigationRequest: (NavigationRequest request) {
+              debugPrint('onNavigationRequest: ${request.url}');
               // if (request.url.startsWith('https://www.youtube.com/')) {
               //   debugPrint('blocking navigation to ${request.url}');
               //   return NavigationDecision.prevent;
               // }
-              // Fluttertoast.showToast(
-              //     msg: 'allowing navigation to ${request.url}',
-              //     toastLength: Toast.LENGTH_SHORT,
-              //     gravity: ToastGravity.CENTER,
-              //     timeInSecForIosWeb: 1,
-              //     backgroundColor: Colors.red,
-              //     textColor: Colors.white,
-              //     fontSize: 16.0
-              // );
-              
-              print('onNavigationRequest: ${request.url}');
               return NavigationDecision.navigate;
             },
             onUrlChange: (UrlChange change) {
@@ -99,37 +99,46 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void setAnchorClick(String cls) async { // 最新上傳
+  void openPlayer() {
+
+  }
+
+  void setLeast() async { // 最新上傳
     await _controller.runJavaScript(
     '''
-    setTimeout(()=>{
-      let options = document.querySelectorAll("div.chip-bar-contents > *");
-      let b = false;
-      for(let i = 0; i < options.length; i++) {
-        let item = options[i];
-        if(item.innerText == "最新上傳") {
-          item.click();
-          setTimeout(readAnchor, 600);
-          b = true;
-        }
-      }
-      if(b == false) readAnchor();
-    }, 1000);
-    
-    function readAnchor(){
-      window.intervalAnchor = setInterval(()=>{
-        let xx = document.querySelectorAll("$cls");
-        xx.forEach((item, index) =>{
-          let href = item.getAttribute("href");
-          if(href != null && href.indexOf("javascr") == -1) {
-            if(index == 2) console.log(href)
-            item.setAttribute("href", "javascript:void(0);");
-            item.setAttribute("_href", href);
-            item.addEventListener("click", onAnchorClick, false)
+      let times = 0;
+      let interval = setInterval(()=>{
+        let options = document.querySelectorAll("div.chip-bar-contents > *");
+        for(let i = 0; i < options.length; i++) {
+          let item = options[i];
+          if(item.innerText == "最新上傳") {
+            item.click();
+            console.log("成功........................");
+            if(times >= 3) {
+              clearInterval(interval)
+            }
+            times++;
           }
-        })
-      }, 1 * 1000);        
-    }
+        }
+      }, 3000);   
+    ''');
+  }
+
+  void setAnchorClick(String cls) async {
+    await _controller.runJavaScript(
+    '''
+    window.intervalAnchor = setInterval(()=>{
+      let xx = document.querySelectorAll("$cls");
+      xx.forEach((item, index) =>{
+        let href = item.getAttribute("href");
+        if(href != null && href.indexOf("javascr") == -1) {
+          if(index == 2) console.log(href)
+          item.setAttribute("href", "javascript:void(0);");
+          item.setAttribute("_href", href);
+          item.addEventListener("click", onAnchorClick, false)
+        }
+      })
+    }, 1 * 1000);        
 
     function onAnchorClick(e) {
       e.preventDefault();
@@ -163,7 +172,6 @@ class _HomeState extends State<Home> {
       : await Permission.manageExternalStorage.status;
     permission = status.isGranted;
     setState(() {});
-    print("permission: $permission");
     // writeFile();
   }
 
@@ -217,6 +225,7 @@ class _HomeState extends State<Home> {
   }
 
   Widget webview() {
+    print("create WebView......................");
     return Container(
       color: Colors.white,
       child: (permission == false) ? null : WebViewWidget(controller: _controller),

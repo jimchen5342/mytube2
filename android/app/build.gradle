@@ -37,10 +37,16 @@ android {
         applicationId "com.flutter.mytube2"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+//        minSdkVersion flutter.minSdkVersion
+//        targetSdkVersion flutter.targetSdkVersion
+//        versionCode flutterVersionCode.toInteger()
+//        versionName flutterVersionName
+
+        minSdkVersion 23
+        targetSdkVersion 34
+        versionCode 1
+        versionName "2024-04-09 08:30"
+        setProperty("archivesBaseName", "MyTube2")
     }
 
     buildTypes {
