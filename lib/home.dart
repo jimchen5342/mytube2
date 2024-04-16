@@ -39,15 +39,27 @@ class _HomeState extends State<Home> {
         ..setNavigationDelegate(
           NavigationDelegate(
             onProgress: (int progress) {
-              // context.read<WebviewManager>().changeLoadingProgress(progress);
-              print("onProgress: $progress");
+              // print("onProgress: $progress");
             },
             onPageStarted: (String url) {
-              // context.read<WebviewManager>().changeLoadingStatus(true);
               print("onPageStarted: $url");
             },
             onPageFinished: (String url) {
               print("onPageFinished: $url");
+              if(url == "https://m.youtube.com/" ) { // a.large-media-item-thumbnail-container
+                setAnchorClick("a.media-item-thumbnail-container");
+              } else if(url.indexOf("/feed/subscriptions") > -1) {
+                setAnchorClick(".item a"); // compact-media-item
+              } else if(url.indexOf("/channel/") > -1) {
+                setAnchorClick(".item a");
+              } else if(url.indexOf("/user/") > -1) {
+                setAnchorClick(".compact-media-item a"); // 
+              } else if(url.indexOf("playlist?list=") > -1) {
+                setAnchorClick("a.compact-media-item-image"); 
+              } else if(url.indexOf("#") > -1){
+              } else if(url.indexOf("/feed/library") > -1 || url.indexOf("/feed/channels") > -1) {
+              
+              }     
             },
             onWebResourceError: (WebResourceError error) {
              
@@ -57,21 +69,21 @@ class _HomeState extends State<Home> {
               //   debugPrint('blocking navigation to ${request.url}');
               //   return NavigationDecision.prevent;
               // }
-              Fluttertoast.showToast(
-                  msg: 'allowing navigation to ${request.url}',
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.red,
-                  textColor: Colors.white,
-                  fontSize: 16.0
-              );
+              // Fluttertoast.showToast(
+              //     msg: 'allowing navigation to ${request.url}',
+              //     toastLength: Toast.LENGTH_SHORT,
+              //     gravity: ToastGravity.CENTER,
+              //     timeInSecForIosWeb: 1,
+              //     backgroundColor: Colors.red,
+              //     textColor: Colors.white,
+              //     fontSize: 16.0
+              // );
               
-              print('allowing navigation to ${request.url}');
+              print('onNavigationRequest: ${request.url}');
               return NavigationDecision.navigate;
             },
             onUrlChange: (UrlChange change) {
-              print('url change to ${change.url}');
+             
             },
             onHttpAuthRequest: (HttpAuthRequest request) {
               // openDialog(request);
@@ -85,6 +97,56 @@ class _HomeState extends State<Home> {
 
       await initial();
     });
+  }
+
+  void setAnchorClick(String cls) async { // 最新上傳
+    await _controller.runJavaScript(
+    '''
+    setTimeout(()=>{
+      let options = document.querySelectorAll("div.chip-bar-contents > *");
+      let b = false;
+      for(let i = 0; i < options.length; i++) {
+        let item = options[i];
+        if(item.innerText == "最新上傳") {
+          item.click();
+          setTimeout(readAnchor, 600);
+          b = true;
+        }
+      }
+      if(b == false) readAnchor();
+    }, 1000);
+    
+    function readAnchor(){
+      window.intervalAnchor = setInterval(()=>{
+        let xx = document.querySelectorAll("$cls");
+        xx.forEach((item, index) =>{
+          let href = item.getAttribute("href");
+          if(href != null && href.indexOf("javascr") == -1) {
+            if(index == 2) console.log(href)
+            item.setAttribute("href", "javascript:void(0);");
+            item.setAttribute("_href", href);
+            item.addEventListener("click", onAnchorClick, false)
+          }
+        })
+      }, 1 * 1000);        
+    }
+
+    function onAnchorClick(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      let tagName = "", parent = e.srcElement;
+      do {
+        tagName = parent.tagName;
+        if(tagName == "A")
+          break;
+        else
+          parent = parent.parentElement;
+      } while(tagName != "A")
+      let _href = parent.getAttribute("_href");
+      Flutter.postMessage(JSON.stringify({href: _href}));
+    }
+    ''');
   }
 
   initial() async {
@@ -101,6 +163,7 @@ class _HomeState extends State<Home> {
       : await Permission.manageExternalStorage.status;
     permission = status.isGranted;
     setState(() {});
+    print("permission: $permission");
     // writeFile();
   }
 
@@ -121,11 +184,8 @@ class _HomeState extends State<Home> {
   void reassemble() async { // develope mode
     super.reassemble();
     // initial();
-    debugPrint("test");
-
     Future.delayed(const Duration(milliseconds: 100), () {
-      
-        // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
+      // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
     }); 
   }
 
@@ -140,9 +200,26 @@ class _HomeState extends State<Home> {
   }
   @override
   Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
+        if(await _controller.currentUrl() == "https://m.youtube.com/") {
+          exit(0);
+        } else {
+          await _controller.goBack();
+        }
+      },
+      child: webview()
+    );
+  }
+
+  Widget webview() {
     return Container(
       color: Colors.white,
-      child: (permission == false)  ? null : WebViewWidget(controller: _controller)
+      child: (permission == false) ? null : WebViewWidget(controller: _controller),
     );
   }
 }

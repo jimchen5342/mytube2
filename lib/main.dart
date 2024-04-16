@@ -9,7 +9,6 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: MaterialApp(
