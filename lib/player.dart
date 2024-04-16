@@ -12,9 +12,9 @@ class _PlayerState extends State<Player> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      href = ModalRoute.of(context)!.settings.arguments as String;
-      setState(() {
-      });
+      var arg = ModalRoute.of(context)!.settings.arguments;
+      href = "$arg";
+      setState(() { });
     });
   }
 
@@ -36,6 +36,6 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(child: Text(""),);
+    return Container(child: Text(href),);
   }
 }

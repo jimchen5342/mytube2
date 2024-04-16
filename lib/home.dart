@@ -9,6 +9,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mytube2/system/youtube.dart';
+import 'package:mytube2/system/system.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -164,6 +166,8 @@ class _HomeState extends State<Home> {
   }
 
   initial() async {
+    
+
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
 
@@ -175,7 +179,7 @@ class _HomeState extends State<Home> {
     var status = build.version.sdkInt < 30 
       ? await Permission.storage.status
       : await Permission.manageExternalStorage.status;
-    permission = status.isGranted;
+    // permission = status.isGranted;
     setState(() {});
     // writeFile();
   }
@@ -196,7 +200,9 @@ class _HomeState extends State<Home> {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-
+    YouTube youTube = YouTube();
+    // youTube.getData();
+    youTube.getAudioStream();
     Future.delayed(const Duration(milliseconds: 100), () {
       // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
     }); 
