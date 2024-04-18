@@ -11,6 +11,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mytube2/system/youtube.dart';
 import 'package:mytube2/system/system.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -46,8 +47,7 @@ class _HomeState extends State<Home> {
             if (obj["href"] != null) {
               openPlayer(obj["href"]);
             }
-              // setMessage(message.message);
-              print(message.message);
+            print(message.message);
           })
         ..setNavigationDelegate(
           NavigationDelegate(
@@ -57,27 +57,7 @@ class _HomeState extends State<Home> {
             onPageStarted: (String url) {
               print("onPageStarted: $url");
             },
-            onPageFinished: (String url) async {
-              print("onPageFinished: $url");
-              if(this.url == url ) return;
-              this.url = url;
-              if(url == "https://m.youtube.com/" ) {
-                setLeast();
-                setAnchorClick("a.media-item-thumbnail-container");
-              } else if(url.contains("/feed/subscriptions")) {
-                setAnchorClick(".item a"); // compact-media-item
-              } else if(url.contains("/channel/")) {
-                setAnchorClick(".item a");
-              } else if(url.contains("/user/")) {
-                setAnchorClick(".compact-media-item a"); // 
-              } else if(url.contains("playlist?list=")) {
-                setAnchorClick("a.compact-media-item-image"); 
-              } else if(url.contains("#")){
-                
-              } else if(url.contains("/feed/library") || url.contains("/feed/channels")) {
-              
-              }     
-            },
+            onPageFinished: onPageFinished,
             onWebResourceError: (WebResourceError error) {
              
             },
@@ -96,14 +76,45 @@ class _HomeState extends State<Home> {
               // openDialog(request);
             },
           ),
-        )
-        ..loadRequest(Uri.parse("https://m.youtube.com/"));
-
+        );
+        // ..loadRequest(Uri.parse("https://m.youtube.com/"));
       _controller = controller;
-      // _controller.runJavaScript(javaScript)
+      // final String contentBase64 = base64Encode( const Utf8Encoder().convert('''<div style="font-size: 30px;">載入中</div>'''));
+      // _controller.loadRequest(
+      //   Uri.parse('data:text/html;base64,$contentBase64'),
+      // );
 
       await initial();
+      setState(() {});
+      Future.delayed(const Duration(milliseconds: 300 * 1), () {
+        _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
+      });
     });
+  }
+
+  onPageFinished(String url) async {
+    DateFormat formatter = DateFormat("mm:ss"); // "yyyy/MM/dd HH:mm:ss"
+
+    print("onPageFinished: $url, ${formatter.format(DateTime.now())} ");
+
+    if(this.url == url) return;
+    this.url = url;
+    if(url == "https://m.youtube.com/" ) {
+      setLeast();
+      setAnchorClick("a.media-item-thumbnail-container");
+    } else if(url.contains("/feed/subscriptions")) {
+      setAnchorClick(".item a"); // compact-media-item
+    } else if(url.contains("/channel/")) {
+      setAnchorClick(".item a");
+    } else if(url.contains("/user/")) {
+      setAnchorClick(".compact-media-item a"); // 
+    } else if(url.contains("playlist?list=")) {
+      setAnchorClick("a.compact-media-item-image"); 
+    } else if(url.contains("#")){
+      
+    } else if(url.contains("/feed/library") || url.contains("/feed/channels")) {
+    
+    }
   }
 
   void openPlayer(String href) {
@@ -113,21 +124,33 @@ class _HomeState extends State<Home> {
   void setLeast() async { // 最新上傳
     await _controller.runJavaScript(
     '''
-      let times = 0;
-      let interval = setInterval(()=>{
-        let options = document.querySelectorAll("div.chip-bar-contents > *");
-        for(let i = 0; i < options.length; i++) {
-          let item = options[i];
-          if(item.innerText == "最新上傳") {
-            item.click();
-            console.log("成功........................");
-            if(times >= 3) {
-              clearInterval(interval)
-            }
-            times++;
-          }
+      window.timesToolbar = 0;
+      window.onload=function(){
+        exeToolbar();
+      }
+
+      function exeToolbar() {
+        window.timesToolbar++;
+        // console.log("exeToolbar: " + (new Date()))
+        if(window.timesToolbar > 10) {
+          window.timesToolbar = 0;
+          return;
         }
-      }, 3000);   
+
+        let options = document.querySelectorAll("div.chip-bar-contents > *");
+        if(options.length > 2) {
+          for(let i = 0; i < options.length; i++) {
+            let item = options[i];
+            if(!(item.innerText == "最新上傳" || item.innerText == "全部")) {
+              item.remove();
+            // } else if(item.innerText == "最新上傳") {
+            //   item.click();
+            //   console.log("成功........................");
+            }
+          }          
+        }
+        setTimeout(exeToolbar, 1000 * 3)
+      }
     ''');
   }
 
@@ -166,8 +189,6 @@ class _HomeState extends State<Home> {
   }
 
   initial() async {
-    
-
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
 
@@ -179,8 +200,11 @@ class _HomeState extends State<Home> {
     var status = build.version.sdkInt < 30 
       ? await Permission.storage.status
       : await Permission.manageExternalStorage.status;
-    // permission = status.isGranted;
-    setState(() {});
+    if(! status.isGranted) {
+      exit(0);
+    } else {
+      permission = status.isGranted;
+    }
     // writeFile();
   }
 
@@ -200,9 +224,9 @@ class _HomeState extends State<Home> {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    YouTube youTube = YouTube();
-    // youTube.getData();
-    youTube.getAudioStream();
+    // YouTube youTube = YouTube();
+    // // youTube.getData();
+    // youTube.getAudioStream();
     Future.delayed(const Duration(milliseconds: 100), () {
       // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
     }); 
