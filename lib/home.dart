@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
           onMessageReceived: (JavaScriptMessage message) {
             Map<String, dynamic> obj = jsonDecode(message.message);
             if (obj["href"] != null) {
-              openPlayer(obj["href"]);
+              openVideo(obj["href"]);
             }
             print(message.message);
           })
@@ -117,8 +117,8 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void openPlayer(String href) {
-     Navigator.pushNamed(context, '/player', arguments: href) as bool;
+  void openVideo(String href) {
+    Navigator.pushNamed(context, '/video', arguments: href);
   }
 
   void setLeast() async { // 最新上傳
@@ -229,6 +229,7 @@ class _HomeState extends State<Home> {
     // youTube.getAudioStream();
     Future.delayed(const Duration(milliseconds: 100), () {
       // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
+      openVideo("/watch?v=sTjJ1LlviKM");
     }); 
   }
 
