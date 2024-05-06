@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mytube2/audio.dart';
 
-class Video extends StatefulWidget {
-  const Video({Key? key}) : super(key: key);
+class Player extends StatefulWidget {
+  const Player({Key? key}) : super(key: key);
   @override
-  _VideoState createState() => _VideoState();
+  _PlayerState createState() => _PlayerState();
 }
 
-class _VideoState extends State<Video>  with WidgetsBindingObserver{
+class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
   int local = -1;
   Map<String, dynamic> playItem = {};
@@ -79,7 +80,7 @@ class _VideoState extends State<Video>  with WidgetsBindingObserver{
           )
         ), 
           // local == -1 ? null : (local == 1  
-          // ? Video(url: this.widget.url, folder: folder, playItem: playItem)
+          // ? Player(url: this.widget.url, folder: folder, playItem: playItem)
           // : Browser(url: this.widget.url, onCreated: (Browser controller){
           //   this.controller = controller;
             
