@@ -118,7 +118,7 @@ class _HomeState extends State<Home> {
   }
 
   void openVideo(String href) {
-    Navigator.pushNamed(context, '/video', arguments: href);
+    Navigator.pushNamed(context, '/player', arguments: href);
   }
 
   void setLeast() async { // 最新上傳

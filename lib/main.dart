@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytube2/home.dart';
-import 'package:mytube2/video.dart';
+import 'package:mytube2/player.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/home',
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const Home(),
-          '/video': (BuildContext context) => const Video(),
+          '/player': (BuildContext context) => const Player(),
         },
       )
     );
