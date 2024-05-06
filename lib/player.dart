@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytube2/audio.dart';
+import 'package:mytube2/system/youtube.dart';
 
 class Player extends StatefulWidget {
   const Player({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
   int local = -1;
   Map<String, dynamic> playItem = {};
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
+    Widget child;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -69,7 +73,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
               // fontSize: 20,
             )
           ),
-          actions: [],
+          // actions: [],
           backgroundColor: Colors.blue, 
         ),
         body: Container(child: Text(href, 
@@ -79,29 +83,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
             )
           )
         ), 
-          // local == -1 ? null : (local == 1  
-          // ? Player(url: this.widget.url, folder: folder, playItem: playItem)
-          // : Browser(url: this.widget.url, onCreated: (Browser controller){
-          //   this.controller = controller;
-            
-          // },)
-        // ),
-        floatingActionButton: playItem["key"] is String && playItem["fileName"] is String
-          ? Container()
-          : FloatingActionButton(
-            onPressed: () async {
-              // local = local == 1 ? 0 : 1;
-              // await Storage.setInt("isLocal", local);
-              // await changeSource();
-              setState((){ });
-            },
-            child: local == -1 ? Container() 
-              : Icon(
-                local == 0 ? Icons.vertical_align_bottom_sharp : Icons.wb_cloudy_sharp, 
-                size: 30, 
-                color: Colors.white
-              ),
-        )
       )
     );
   }

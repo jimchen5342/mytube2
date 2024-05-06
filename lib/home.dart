@@ -8,8 +8,6 @@ import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:mytube2/system/youtube.dart';
 import 'package:mytube2/system/system.dart';
 import 'package:intl/intl.dart';
 
@@ -45,9 +43,9 @@ class _HomeState extends State<Home> {
           onMessageReceived: (JavaScriptMessage message) {
             Map<String, dynamic> obj = jsonDecode(message.message);
             if (obj["href"] != null) {
-              openVideo(obj["href"]);
+              openPlayer(obj["href"]);
             }
-            print(message.message);
+            // print(message.message);
           })
         ..setNavigationDelegate(
           NavigationDelegate(
@@ -117,7 +115,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void openVideo(String href) {
+  void openPlayer(String href) {
     Navigator.pushNamed(context, '/player', arguments: href);
   }
 
@@ -229,7 +227,7 @@ class _HomeState extends State<Home> {
     // youTube.getAudioStream();
     Future.delayed(const Duration(milliseconds: 100), () {
       // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
-      openVideo("/watch?v=sTjJ1LlviKM");
+      // openPlayer("/watch?v=sTjJ1LlviKM");
     }); 
   }
 
