@@ -4,15 +4,20 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 class YouTube {
   var yt = YoutubeExplode();
   String url = "Dpp1sIL1m5Q";
+  var streams;
 
-  static parselKey(String key){
-    return key.replaceAll("https://m.youtube.com/watch?v=", "");
+  YouTube({required this.url}) {
+    this.url = YouTube.parselKey(this.url);
+    print("${this.url}");
   }
 
-  Future<void> getData() async {
-    Video video = await yt.videos.get('https://youtube.com/watch?v=${url}'); // Returns a Video instance.
-    print("getData: ${video.id}, duration: ${video.duration}");
+  static parselKey(String key){
+    return key.replaceAll("https://m.youtube.com/watch?v=", "").replaceAll("/watch?v=", "");
+  }
 
+  Future<dynamic> getData() async {
+    Video video = await yt.videos.get('https://youtube.com/watch?v=${url}');
+    return video;
     /*
     duration: 
     id: , 
@@ -22,17 +27,14 @@ class YouTube {
     publishDate: , 
     description: 
     */
-
   }
 
   getAudioStream() async {
     try {
       // mode = Mode.audio;  mb = ""; qualityHigh = -1; qualityLow = -1; qualityMedium = -1; selected = -1;
       var manifest = await yt.videos.streamsClient.getManifest(url);
-      // streams = manifest.audioOnly;
-      print(manifest);
+      return manifest.audioOnly.toList();
     } catch(e) {
-      print(e);
       throw e;
     }
   }

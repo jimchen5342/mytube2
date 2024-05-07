@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mytube2/system/system.dart';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:mytube2/system/system.dart';
+import 'package:mytube2/system/module.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -27,7 +27,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-
+      await Archive.home();
       final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
             const PlatformWebViewControllerCreationParams());
@@ -75,25 +75,21 @@ class _HomeState extends State<Home> {
             },
           ),
         );
-        // ..loadRequest(Uri.parse("https://m.youtube.com/"));
       _controller = controller;
-      // final String contentBase64 = base64Encode( const Utf8Encoder().convert('''<div style="font-size: 30px;">載入中</div>'''));
-      // _controller.loadRequest(
-      //   Uri.parse('data:text/html;base64,$contentBase64'),
-      // );
 
       await initial();
       setState(() {});
-      Future.delayed(const Duration(milliseconds: 300 * 1), () {
+
+      setTimeout(() {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
-      });
+      }, 300);
     });
   }
 
   onPageFinished(String url) async {
     DateFormat formatter = DateFormat("mm:ss"); // "yyyy/MM/dd HH:mm:ss"
 
-    print("onPageFinished: $url, ${formatter.format(DateTime.now())} ");
+    // print("onPageFinished: $url, ${formatter.format(DateTime.now())} ");
 
     if(this.url == url) return;
     this.url = url;
@@ -206,27 +202,13 @@ class _HomeState extends State<Home> {
     // writeFile();
   }
 
-  writeFile() async { // 測好了，可以用
-    var path = await ExternalPath.getExternalStorageDirectories();
-    var file = File('${path[0]}/counter.txt');
-
-    file.writeAsString('jim'); 
-    /* 測好了，可以用
-    var path = await ExternalPath.getExternalStorageDirectories();
-    print("path: ${path[0]}");
-    var path2 = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_MUSIC);
-    print("DIRECTORY_MUSIC: ${path2}");
-    */
-  }
+  
 
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    // YouTube youTube = YouTube();
-    // // youTube.getData();
-    // youTube.getAudioStream();
+
     Future.delayed(const Duration(milliseconds: 100), () {
-      // _controller.loadRequest(Uri.parse("https://api.flutter.dev/flutter/dart-async/Future/timeout.html"));
       // openPlayer("/watch?v=sTjJ1LlviKM");
     }); 
   }
@@ -259,7 +241,6 @@ class _HomeState extends State<Home> {
   }
 
   Widget webview() {
-    print("create WebView......................");
     return Container(
       color: Colors.white,
       child: (permission == false) ? null : WebViewWidget(controller: _controller),
