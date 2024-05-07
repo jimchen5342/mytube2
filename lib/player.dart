@@ -13,12 +13,13 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
-  int local = -1;
+  int local = -1, qualityMedium = -1;
   Map<String, dynamic> playItem = {};
   late YouTube youTube;
   dynamic? video;
   List streams = [];
   late String home;
+  var loadingContext;
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       var arg = ModalRoute.of(context)!.settings.arguments;
       href = "$arg";
       home = await Archive.home();
+      print("home: $home");
       initial();
     });
     WidgetsBinding.instance.addObserver(this);
@@ -45,6 +47,10 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   initial() async {
     // print("href: $href");
+    loading(context, onReady: (_) {
+      loadingContext = _;
+    });
+
     try {
       youTube = YouTube(url: href);
       video = await youTube.getData();
@@ -57,12 +63,15 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           index = i;
         }
       }
-      print(streams);
+      qualityMedium = index;
+      // print(streams);
+      setState(() {});
     } catch(e) {
-      // ignore: use_build_context_synchronously
       alert(context, e.toString());
     } finally {
-      setState(() {});
+      if(loadingContext != null)
+        Navigator.pop(loadingContext);
+      loadingContext = null;
     }
   }
 
@@ -108,6 +117,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           ),
           // actions: [],
           backgroundColor: Colors.blue, 
+          // backgroundColor: const Color.fromRGBO(192, 25, 33, 0), 
         ),
         body: _buildBody(), 
       )
@@ -179,11 +189,13 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
-          String mb = "${streams[index].size.totalMegaBytes.toStringAsFixed(1) + 'MB'}",
-            quality = "";
+          String mb = "${streams[index].size.totalMegaBytes.toStringAsFixed(1) + 'MB'}";
           Color bg = Colors.grey.shade200, color = Colors.black;
-         
           double fontSize = width < 800 ? 16 : 24;
+          if(qualityMedium == index) {
+            bg = Colors.green.shade500; 
+            color = Colors.white;
+          }
           
           return Material(
             child: InkWell(
@@ -231,13 +243,13 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     try {
       await getVideo();
     } catch(e) {
+      print(e);
     }
   }
 
   Future<void> getVideo() async {
     try{
-      // await download.execute(folder: isPlaylist == true ? this.widget.folder : "",
-      //   fileName: isPlaylist == true ? this.widget.playItem["fileName"] : "",
+      // await download.execute(
       //   onProcessing: (int process) async {
       //     processing = process;
       //     if(process == 100 && isPlaylist == false) {

@@ -21,7 +21,7 @@ class Archive {
     if(! await Directory(path).exists()) {
       await Directory(path).create(recursive: true);
     }
-    return path;
+    return path + "/";
   }
 
   writeFile() async { // 測好了，可以用
