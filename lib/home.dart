@@ -10,6 +10,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:mytube2/system/module.dart';
 import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -83,6 +84,17 @@ class _HomeState extends State<Home> {
       setTimeout(() {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       }, 300);
+
+      Fluttertoast.showToast(
+        msg: "略過 home.dart",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black45,
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+      openPlayer("/watch?v=sTjJ1LlviKM");
     });
   }
 
@@ -202,15 +214,12 @@ class _HomeState extends State<Home> {
     // writeFile();
   }
 
-  
 
   @override
   void reassemble() async { // develope mode
     super.reassemble();
 
-    Future.delayed(const Duration(milliseconds: 100), () {
-      // openPlayer("/watch?v=sTjJ1LlviKM");
-    }); 
+    openPlayer("/watch?v=sTjJ1LlviKM");
   }
 
   @override
