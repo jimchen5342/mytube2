@@ -8,7 +8,7 @@ import 'package:mytube2/system/module.dart';
 
 class YouTube {
   var yt = YoutubeExplode();
-  String url = "Dpp1sIL1m5Q";
+  String url = "Dpp1sIL1m5Q", audioName = "";
   bool stop = false;
 
   YouTube({required this.url}) {
@@ -37,18 +37,21 @@ class YouTube {
   }
 
   dispose(){
+    stop = true;
     yt.close();
   }
 
-  Future<void> execute(var audio, {required Function(int) onProcessing}) async {
+  Future<String> execute(var audio, {required Function(int) onProcessing}) async {
     stop = false;
+    String fileName = "";
     try {
       String path = await Archive.home();
       String mb = "${audio.size.totalMegaBytes.toStringAsFixed(2) + 'MB'}";
       if(Directory(path).existsSync() == false)
         Directory(path).createSync();
       
-      String fileName = '${path}youtube.${audio.container.name.toString()}';
+      fileName = '${path}youtube.${audio.container.name.toString()}';
+      audioName = fileName;
       var file = File(fileName);
       removeFile(fileName);
       // print("fileName: $fileName");
@@ -75,16 +78,31 @@ class YouTube {
         removeFile(fileName);
       } else {
         await output.close();
+        return fileName;
       }
     } catch(e) {
       print(e);
       throw e;
     }
+    return fileName;
   }
   removeFile(String fileName) {
-    var file = File(fileName);
-    if (file.existsSync()) {
-      file.deleteSync();
+    if(fileName.contains("youtube.")) {
+      var i = fileName.lastIndexOf(".");
+      List f1 = ['3gpp', 'webm', 'mp4'];
+      String f2 = fileName.substring(0, i + 1);
+      for(var i = 0; i < f1.length; i++) {
+        String fn = f2 + f1[i];
+        var f3 = File(fn);
+        if (f3.existsSync()) {
+          f3.deleteSync();
+        }
+      }
+    } else {
+      var file = File(fileName);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     }
   }
 }
