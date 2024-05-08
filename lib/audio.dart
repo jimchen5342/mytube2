@@ -72,9 +72,11 @@ class _AudioState extends State<Audio>{
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSlider(),
+          if(_audioHandler != null)
+            _buildSlider(),
           const SizedBox(height: 5),
-          _buildControls()
+          if(_audioHandler != null)
+            _buildControls()
         ]
       )
     );
@@ -82,7 +84,9 @@ class _AudioState extends State<Audio>{
 
   Widget _button(IconData iconData, VoidCallback onPressed, {bool visible = true}){
     Widget btn = IconButton(
-      icon: Icon(iconData, color: Colors.white, size: 30),
+      icon: Icon(iconData, 
+        // color: Colors.white, 
+        size: 30),
       onPressed: onPressed,
     );
 
@@ -122,14 +126,16 @@ class _AudioState extends State<Audio>{
       builder: (context, snapshot) {
         final currentPosition = snapshot.data ?? const Duration(seconds: 0);
 
+        final xx = duration ?? const Duration(seconds: 0);
+
         return Slider(
-          value: currentPosition.inSeconds as double,
-          max: duration?.inSeconds as double,
+          value: currentPosition.inSeconds.toDouble(),
+          max: xx.inSeconds.toDouble(),
           // divisions: 5,
           label: currentPosition.format(),
           onChanged: (double value) {
             setState(() {
-              _audioHandler!.seek(Duration(seconds: value as int));
+              _audioHandler!.seek(Duration(seconds: value.toInt()));
             });
           },
         );
@@ -145,9 +151,10 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   void init() async {
     _player.playbackEventStream.listen(_broadcastState);
+    currentPosition.add(Duration.zero);
 
     AudioService.position.listen((Duration position) {
-      currentPosition.add(position); // 可以用了，但找不到清除的作法
+      currentPosition.add(position);
     });
 
     if(queue.value.isNotEmpty) {
