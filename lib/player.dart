@@ -13,13 +13,13 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
-  int local = -1, qualityMedium = -1;
+  int qualityMedium = -1, processing = -1;
   Map<String, dynamic> playItem = {};
   late YouTube youTube;
   dynamic? video;
   List streams = [];
   late String home;
-  var loadingContext;
+  
 
   @override
   void initState() {
@@ -28,7 +28,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       var arg = ModalRoute.of(context)!.settings.arguments;
       href = "$arg";
       home = await Archive.home();
-      print("home: $home");
       initial();
     });
     WidgetsBinding.instance.addObserver(this);
@@ -46,6 +45,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   }
 
   initial() async {
+    var loadingContext;
     // print("href: $href");
     loading(context, onReady: (_) {
       loadingContext = _;
@@ -57,7 +57,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       streams = await youTube.getAudioStream();
       var size = 0.0, index = 0;
       for(int i = 0; i < streams.length; i++){
-        print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
+        // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
         if(streams[i].size.totalMegaBytes < size || i == 0) {
           size = streams[i].size.totalMegaBytes;
           index = i;
@@ -69,8 +69,9 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     } catch(e) {
       alert(context, e.toString());
     } finally {
-      if(loadingContext != null)
+      if(loadingContext != null) {
         Navigator.pop(loadingContext);
+      }
       loadingContext = null;
     }
   }
@@ -80,19 +81,15 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
     Fluttertoast.cancel();
+    youTube.dispose();
   }
-    @override
+  
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state)  {
     switch (state) {
       case AppLifecycleState.paused:
-        // if(local != 1 && this.controller!.noAD == false) {
-        //   timer = Timer(Duration(minutes: 30), () { // broswer.dart 要 pause
-        //     Navigator.pop(context);
-        //   });          
-        // }
         break;
       case AppLifecycleState.resumed:
-        // if(timer != null) timer.cancel();
         break;
       default:
     }
@@ -134,7 +131,10 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         if(video != null)
           _buildInformation(),
         Expanded(flex: 1, child: Container()),
-        grid()
+        if(processing == -1) 
+          _buildBtnGrid() 
+        else  
+          _buildProcess(),
       ],)
     );
   }
@@ -162,13 +162,34 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
               // color: Colors.white,
               fontSize: 20,
             )
-          )
+          ),
+          if(processing < 100 && processing > -1) // 下載進度
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(height: 30,),
+                LinearProgressIndicator(  
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation(Colors.blue),
+                  value: processing.toDouble() / 100,  
+                ),
+                Container(height: 10,),
+                Text(processing.toString(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.blue,
+                    fontSize: 20,
+                  )
+                ),
+              ]
+            )
         ]
       )
     );
   }
 
-  grid(){
+  Widget _buildBtnGrid(){
     double width = MediaQuery.of(context).size.width;
     int w = width < 800 ? 150 : 180;
     int cells = (width / w).ceil();
@@ -235,37 +256,77 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     );
   }
 
+  Widget _buildProcess() {
+    double height = MediaQuery.of(context).size.height;
+    return Row(children: [
+      if(processing > -1) 
+        ElevatedButton(
+          style: ButtonStyle(textStyle: MaterialStateProperty.all( const TextStyle(fontSize: 18)),
+            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15, vertical: height > 800 ? 10 : 5))
+          ),
+          onPressed: () async {
+            // if(download.streams == null){
+            //   download.title = "";
+            //   streamsTimes = 1;
+            // }
+            // download.stop = true;
+            // processing = -1;
+            // setState(() {});
+            // player = null;
+            // if(download.streams == null)
+            //   await getStream();
+          },
+          child: const Text('重新選擇'),
+        ),
+      if(processing == 100) Container(width: 5),
+      if(processing == 100) 
+        ElevatedButton(
+          child: Text('另存新檔'),
+          style: ButtonStyle(textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
+            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15, vertical:  height > 800 ? 10 : 5))
+          ),
+          onPressed: () async {
+            // fileSave(context, 
+            //   videoKey: videoKey,
+            //   fileName: download.fileName,
+            //   title: this.widget.playItem["title"] is String ? this.widget.playItem["title"] : download.title, 
+            //   author: this.widget.playItem["author"] is String ? this.widget.playItem["author"] : download.author
+            // ); 
+          },
+        )
+    ]);
+  }
+
   void choiceVideo(index) async {
     // if(timerChoice != null) timerChoice.cancel();
     Fluttertoast.cancel();
     var audio = streams.elementAt(index);
-    print(audio);
     try {
-      await getVideo();
+      await getVideo(audio);
     } catch(e) {
       print(e);
     }
   }
 
-  Future<void> getVideo() async {
+  Future<void> getVideo(dynamic audio) async {
     try{
-      // await download.execute(
-      //   onProcessing: (int process) async {
-      //     processing = process;
-      //     if(process == 100 && isPlaylist == false) {
-      //       Storage.setString("url", this.widget.url);
-      //       Storage.setString("fileName", download.fileName);
-      //       Storage.setString("title", download.title);
-      //       Storage.setString("author", download.author);
-      //       Storage.setString("mb", download.mb);
-      //       Storage.setInt("duration", download.duration.inMilliseconds);
-      //       if(this.widget.playItem["key"] is String) {
-      //         await playlist.initial();
-      //       }
-      //     }
-      //     setState(() { });
-      //   }
-      // );      
+      await youTube.execute(audio, 
+        onProcessing: (int process) async {
+          processing = process;
+          // if(process == 100 && isPlaylist == false) {
+          //   Storage.setString("url", this.widget.url);
+          //   Storage.setString("fileName", download.fileName);
+          //   Storage.setString("title", download.title);
+          //   Storage.setString("author", download.author);
+          //   Storage.setString("mb", download.mb);
+          //   Storage.setInt("duration", download.duration.inMilliseconds);
+          //   if(this.widget.playItem["key"] is String) {
+          //     await playlist.initial();
+          //   }
+          // }
+          setState(() { });
+        }
+      );
     } catch(e) {
       alert(context, e.toString());
     }

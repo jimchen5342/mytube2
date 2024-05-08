@@ -85,16 +85,16 @@ class _HomeState extends State<Home> {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       }, 300);
 
-      Fluttertoast.showToast(
-        msg: "略過 home.dart",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.black45,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
-      openPlayer("/watch?v=sTjJ1LlviKM");
+      // Fluttertoast.showToast(
+      //   msg: "略過 home.dart",
+      //   toastLength: Toast.LENGTH_LONG,
+      //   gravity: ToastGravity.BOTTOM,
+      //   timeInSecForIosWeb: 1,
+      //   backgroundColor: Colors.black45,
+      //   textColor: Colors.white,
+      //   fontSize: 16.0
+      // );
+      // openPlayer("/watch?v=sTjJ1LlviKM");
     });
   }
 
