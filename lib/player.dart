@@ -127,17 +127,17 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        if(video != null)
-          _buildInformation(),
-        Expanded(flex: 1, child: Container()),
-        if(processing == 100) 
-          Audio(fileName: youTube.audioName, title: video.title),
-        if(processing == -1) 
-          _buildBtnGrid() 
-        else  
-          _buildProcess(),
-
-      ],)
+          if(video != null)
+            _buildInformation(),
+          Expanded(flex: 1, child: Container()),
+          if(processing == 100) 
+            Audio(fileName: youTube.audioName, title: video.title),
+          if(processing == -1) 
+            _buildBtnGrid() 
+          else  
+            _buildProcess(),
+        ],
+      )
     );
   }
 
