@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mytube2/audio.dart';
 import 'package:mytube2/system/youtube.dart';
@@ -5,6 +7,7 @@ import 'package:mytube2/system/system.dart';
 import 'package:mytube2/system/module.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+String home = "";
 class Player extends StatefulWidget {
   const Player({Key? key}) : super(key: key);
   @override
@@ -18,7 +21,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   late YouTube youTube;
   dynamic? video;
   List streams = [];
-  late String home;
+  late PlayList playList;
+  bool isPlayList = false;
   
   @override
   void initState() {
@@ -27,6 +31,11 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       var arg = ModalRoute.of(context)!.settings.arguments;
       href = "$arg";
       home = await Archive.home();
+      playList = PlayList();
+      if(playList.datas.isNotEmpty) {
+
+      }
+
       initial();
     });
     WidgetsBinding.instance.addObserver(this);
@@ -158,6 +167,12 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
             )
           ),
           Text("日期：${"${video.publishDate}".substring(0, 19)}", 
+            style: const TextStyle(
+              // color: Colors.white,
+              fontSize: 20,
+            )
+          ),
+          Text("${video.duration}", 
             style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
@@ -320,22 +335,53 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       await youTube.execute(audio, 
         onProcessing: (int process) async {
           processing = process;
-          // if(process == 100 && isPlaylist == false) {
-          //   Storage.setString("url", this.widget.url);
-          //   Storage.setString("fileName", download.fileName);
-          //   Storage.setString("title", download.title);
-          //   Storage.setString("author", download.author);
-          //   Storage.setString("mb", download.mb);
-          //   Storage.setInt("duration", download.duration.inMilliseconds);
-          //   if(this.widget.playItem["key"] is String) {
-          //     await playlist.initial();
-          //   }
-          // }
+          playList.add(video);
           setState(() { });
         }
       );
     } catch(e) {
       alert(context, e.toString());
     }
+  }
+}
+
+class PlayList {
+  List datas = [];
+
+  PlayList() {
+    read();
+
+  }
+
+  List<dynamic> read() {
+    String s = Archive.readText("${home}playlist.txt");
+    if(s.isNotEmpty) {
+      datas = jsonDecode(s);
+    }
+    return datas;
+  }
+
+  write() {
+    Archive.writeText("${home}playlist.txt", jsonEncode(datas));
+  }
+
+  add(dynamic data) {
+    int index = -1;
+    for(var i = 0; i < datas.length; i++) {
+      if(datas[i].id == data.id) {
+        index = i;
+        break;
+      }
+    }
+    if(index == -1) {
+      datas.add({
+        "id": data.id, "title": data.title, "author": data.author, 
+        "duration": data.duration, 
+        "publishDate": data.publishDate
+      });
+    }
+
+    // id: ,  title: , author: , duration: , publishDate: , description:, channelId: ,
+    write();
   }
 }

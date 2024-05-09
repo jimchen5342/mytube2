@@ -13,32 +13,33 @@ ExternalPath.DIRECTORY_DOCUMENTS
 class Archive {
   static Future<String> root() async {
     var pathes = await ExternalPath.getExternalStorageDirectories();
-    return "${pathes[0]}";
+    return pathes[0];
   }
 
   static Future<String> home() async {
-    var path = (await Archive.root()) + "/MyTube2";
+    var path = "${await Archive.root()}/MyTube2";
     if(! await Directory(path).exists()) {
       await Directory(path).create(recursive: true);
     }
-    return path + "/";
+    return "$path/";
   }
 
-  writeFile() async { // 測好了，可以用
-  /*
-    var path = await ExternalPath.getExternalStorageDirectories();
-    var file = File('${path[0]}/counter.txt');
+  static String readText(String fileName) {
+    String s = "";
 
-    file.writeAsString('jim'); 
-    */
-    
-    /* 測好了，可以用
-    var path = await ExternalPath.getExternalStorageDirectories();
-    print("path: ${path[0]}");
-    var path2 = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_MUSIC);
-    print("DIRECTORY_MUSIC: ${path2}");
-    */
+    File file = File(fileName);
+    if(file.existsSync()) {
+      s = file.readAsStringSync();
+    }
+    return s;
   }
 
+  static  writeText(String fileName, String txt) {
+    File file = File(fileName);
+    // if(file.existsSync()) {
+      
+    // }
+    file.writeAsString(txt);
+  }
 }
 
