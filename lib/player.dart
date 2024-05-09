@@ -68,16 +68,15 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         }
         qualityMedium = index;
         // print(streams);
+        Navigator.pop(loadingContext);
         setState(() {});
       } catch(e) {
-        if(loadingContext != null) {
-          Navigator.pop(loadingContext);
-        }
+        print(e);
+        Navigator.pop(loadingContext);
+      
         alert(context, e.toString());
       } finally {
-        if(loadingContext != null) {
-          Navigator.pop(loadingContext);
-        }
+        
       }
     });
   }

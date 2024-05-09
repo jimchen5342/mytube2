@@ -28,7 +28,6 @@ class YouTube {
 
   getAudioStream() async {
     try {
-      // mode = Mode.audio;  mb = ""; qualityHigh = -1; qualityLow = -1; qualityMedium = -1; selected = -1;
       var manifest = await yt.videos.streamsClient.getManifest(url);
       return manifest.audioOnly.toList();
     } catch(e) {
