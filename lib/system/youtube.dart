@@ -22,7 +22,10 @@ class YouTube {
 
   Future<dynamic> getData() async {
     Video video = await yt.videos.get('https://youtube.com/watch?v=${url}');
-    return video;
+    
+    return {"id": url, "title": video.title, "author": video.author, 
+      "duration": video.duration, "publishDate": video.publishDate, "mb": ""
+    };
     // duration: , id: ,  title: , author: , channelId: ,  publishDate: , description: 
   }
 

@@ -61,6 +61,9 @@ class _AudioState extends State<Audio>{
   @override
   dispose() {
     super.dispose();
+    if(_audioHandler != null) {
+      _audioHandler!.stop();
+    }
     _audioHandler = null;
     songs = [];
   }

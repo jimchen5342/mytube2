@@ -330,11 +330,14 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       await youTube.execute(audio, 
         onProcessing: (int process) async {
           processing = process;
-          playList.add(video);
+          if(processing == 100) {
+            playList.add(video);
+          }
           setState(() { });
         }
       );
     } catch(e) {
+      print(e);
       alert(context, e.toString());
     }
   }
@@ -344,16 +347,11 @@ class PlayList {
   List datas = [];
 
   PlayList() {
-    read();
-
-  }
-
-  List<dynamic> read() {
     String s = Archive.readText("${home}playlist.txt");
     if(s.isNotEmpty) {
       datas = jsonDecode(s);
     }
-    return datas;
+
   }
 
   write() {
