@@ -5,7 +5,7 @@ import 'package:mytube2/audio.dart';
 import 'package:mytube2/system/youtube.dart';
 import 'package:mytube2/system/system.dart';
 import 'package:mytube2/system/module.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 String home = "";
 class Player extends StatefulWidget {
@@ -53,39 +53,36 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   }
 
   initial() async {
-    loading(context, onReady: (loadingContext) async {
-      try {
-        youTube = YouTube(url: href);
-        video = await youTube.getData();
-        streams = await youTube.getAudioStream();
-        var size = 0.0, index = 0;
-        for(int i = 0; i < streams.length; i++){
-          // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
-          if(streams[i].size.totalMegaBytes < size || i == 0) {
-            size = streams[i].size.totalMegaBytes;
-            index = i;
-          }
+    await EasyLoading.show(status: 'loading...');
+    try {
+      youTube = YouTube(url: href);
+      video = await youTube.getData();
+      streams = await youTube.getAudioStream();
+      var size = 0.0, index = 0;
+      for(int i = 0; i < streams.length; i++){
+        // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
+        if(streams[i].size.totalMegaBytes < size || i == 0) {
+          size = streams[i].size.totalMegaBytes;
+          index = i;
         }
-        qualityMedium = index;
-        // print(streams);
-        Navigator.pop(loadingContext);
-        setState(() {});
-      } catch(e) {
-        print(e);
-        Navigator.pop(loadingContext);
-      
-        alert(context, e.toString());
-      } finally {
-        
       }
-    });
+      qualityMedium = index;
+      setState(() {});
+      EasyLoading.dismiss();
+    } catch(e) {
+      print(e);
+      await EasyLoading.dismiss();
+      alert(context, e.toString());
+    } finally {
+      
+    }
+    
   }
 
   @override
   dispose() {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
-    Fluttertoast.cancel();
     youTube.dispose();
   }
   
@@ -320,7 +317,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   void choiceVideo(index) async {
     // if(timerChoice != null) timerChoice.cancel();
-    Fluttertoast.cancel();
     var audio = streams.elementAt(index);
     try {
       await getVideo(audio);

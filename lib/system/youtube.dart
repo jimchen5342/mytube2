@@ -27,12 +27,8 @@ class YouTube {
   }
 
   getAudioStream() async {
-    try {
-      var manifest = await yt.videos.streamsClient.getManifest(url);
-      return manifest.audioOnly.toList();
-    } catch(e) {
-      rethrow;
-    }
+    var manifest = await yt.videos.streamsClient.getManifest(url);
+    return manifest.audioOnly.toList();
   }
 
   dispose(){

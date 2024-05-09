@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mytube2/system/system.dart';
 import 'dart:io';
-import 'dart:async';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:external_path/external_path.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:mytube2/system/module.dart';
 import 'package:intl/intl.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -27,6 +25,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    EasyLoading.show(status: 'loading...');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Archive.home();
       final WebViewController controller =
@@ -85,15 +84,11 @@ class _HomeState extends State<Home> {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       }, 300);
 
-      // Fluttertoast.showToast(
-      //   msg: "略過 home.dart",
-      //   toastLength: Toast.LENGTH_LONG,
-      //   gravity: ToastGravity.BOTTOM,
-      //   timeInSecForIosWeb: 1,
-      //   backgroundColor: Colors.black45,
-      //   textColor: Colors.white,
-      //   fontSize: 16.0
-      // );
+      setTimeout(() {
+        EasyLoading.dismiss();
+      }, 1000 * 3);
+      
+      // EasyLoading.showToast("吐司");
       // openPlayer("/watch?v=sTjJ1LlviKM");
     });
   }
