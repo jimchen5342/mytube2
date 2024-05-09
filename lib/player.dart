@@ -40,39 +40,37 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    initial();
+    // initial();
   }
 
   initial() async {
-    var loadingContext;
-    // print("href: $href");
-    loading(context, onReady: (_) {
-      loadingContext = _;
-    });
-
-    try {
-      youTube = YouTube(url: href);
-      video = await youTube.getData();
-      streams = await youTube.getAudioStream();
-      var size = 0.0, index = 0;
-      for(int i = 0; i < streams.length; i++){
-        // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
-        if(streams[i].size.totalMegaBytes < size || i == 0) {
-          size = streams[i].size.totalMegaBytes;
-          index = i;
+    loading(context, onReady: (loadingContext) async {
+      try {
+        youTube = YouTube(url: href);
+        video = await youTube.getData();
+        streams = await youTube.getAudioStream();
+        var size = 0.0, index = 0;
+        for(int i = 0; i < streams.length; i++){
+          // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
+          if(streams[i].size.totalMegaBytes < size || i == 0) {
+            size = streams[i].size.totalMegaBytes;
+            index = i;
+          }
+        }
+        qualityMedium = index;
+        // print(streams);
+        setState(() {});
+      } catch(e) {
+        if(loadingContext != null) {
+          Navigator.pop(loadingContext);
+        }
+        alert(context, e.toString());
+      } finally {
+        if(loadingContext != null) {
+          Navigator.pop(loadingContext);
         }
       }
-      qualityMedium = index;
-      // print(streams);
-      setState(() {});
-    } catch(e) {
-      alert(context, e.toString());
-    } finally {
-      if(loadingContext != null) {
-        Navigator.pop(loadingContext);
-      }
-      loadingContext = null;
-    }
+    });
   }
 
   @override
@@ -134,8 +132,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
             Audio(fileName: youTube.audioName, title: video.title),
           if(processing == -1) 
             _buildBtnGrid() 
-          else  
-            _buildProcess(),
+          // else  
+          //   _buildFooter(),
         ],
       )
     );
@@ -165,6 +163,13 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
               fontSize: 20,
             )
           ),
+          if(processing > -1) 
+            Text("${youTube.mb}", 
+              style: const TextStyle(
+                  // color: Colors.white,
+                  fontSize: 20,
+                )
+            ),
           if(processing < 100 && processing > -1) // 下載進度
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -258,7 +263,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     );
   }
 
-  Widget _buildProcess() {
+  Widget _buildFooter() {
     double height = MediaQuery.of(context).size.height;
     return Row(children: [
       if(processing > -1) 

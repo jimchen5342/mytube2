@@ -8,7 +8,7 @@ import 'package:mytube2/system/module.dart';
 
 class YouTube {
   var yt = YoutubeExplode();
-  String url = "Dpp1sIL1m5Q", audioName = "";
+  String url = "Dpp1sIL1m5Q", audioName = "", mb = "";
   bool stop = false;
 
   YouTube({required this.url}) {
@@ -46,7 +46,7 @@ class YouTube {
     String fileName = "";
     try {
       String path = await Archive.home();
-      String mb = "${audio.size.totalMegaBytes.toStringAsFixed(2) + 'MB'}";
+      mb = "${audio.size.totalMegaBytes.toStringAsFixed(2) + 'MB'}";
       if(Directory(path).existsSync() == false)
         Directory(path).createSync();
       

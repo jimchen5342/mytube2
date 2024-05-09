@@ -25,17 +25,16 @@ class _AudioState extends State<Audio>{
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(songs.isEmpty){
-        final player = AudioPlayer();
-        duration = await player.setUrl(widget.fileName);
-        var item = MediaItem(
-          id: widget.fileName,
-          title: widget.title,
-          album: "MyTbue",
-          duration: duration,
-        );
-        songs.add(item);        
-      }
+      songs = [];
+      final player = AudioPlayer();
+      duration = await player.setUrl(widget.fileName);
+      var item = MediaItem(
+        id: widget.fileName,
+        title: widget.title,
+        album: "MyTbue",
+        duration: duration,
+      );
+      songs.add(item);        
       _audioHandler ??= await AudioService.init(
         builder: () => AudioPlayerHandler(),
         config: const AudioServiceConfig(
@@ -62,6 +61,8 @@ class _AudioState extends State<Audio>{
   @override
   dispose() {
     super.dispose();
+    _audioHandler = null;
+    songs = [];
   }
    
   @override
@@ -124,21 +125,36 @@ class _AudioState extends State<Audio>{
     return StreamBuilder<Duration>(
       stream: _audioHandler!.currentPosition,
       builder: (context, snapshot) {
-        final currentPosition = snapshot.data ?? const Duration(seconds: 0);
+        var currentPosition = (snapshot.data ?? const Duration(seconds: 0)).inSeconds.toDouble();
 
-        final xx = duration ?? const Duration(seconds: 0);
+        final xx = (duration ?? const Duration(seconds: 0)).inSeconds.toDouble();
+        if(currentPosition > xx) currentPosition = 0;
 
-        return Slider(
-          value: currentPosition.inSeconds.toDouble(),
-          max: xx.inSeconds.toDouble(),
-          // divisions: 5,
-          label: currentPosition.format(),
-          onChanged: (double value) {
-            setState(() {
-              _audioHandler!.seek(Duration(seconds: value.toInt()));
-            });
-          },
-        );
+        return Row(
+          children: [
+            Expanded(flex: 1, 
+              child:  Slider(
+                value: currentPosition,
+                max: xx,
+                // divisions: 5,
+                // label: currentPosition.format(),
+                onChanged: (double value) {
+                  setState(() {
+                    _audioHandler!.seek(Duration(seconds: value.toInt()));
+                  });
+                },
+              )
+            ),
+            if(currentPosition > 0)
+              Text((snapshot.data ?? const Duration(seconds: 0)).format(), 
+                style: const TextStyle(
+                  // color: Colors.white,
+                  fontSize: 20,
+                )
+              )
+          ]
+        )
+        ;
       }
     );
   }
