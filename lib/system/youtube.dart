@@ -1,9 +1,9 @@
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 // https://cloud.tencent.com/developer/ask/sof/106892920
-
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
+
 import 'package:mytube2/system/module.dart';
 
 class YouTube {
@@ -13,7 +13,6 @@ class YouTube {
 
   YouTube({required this.url}) {
     url = YouTube.parselKey(url);
-    // print("${this.url}");
   }
 
   static parselKey(String key){
@@ -24,14 +23,15 @@ class YouTube {
     Video video = await yt.videos.get('https://youtube.com/watch?v=${url}');
     
     return {"id": url, "title": video.title, "author": video.author, 
-      "duration": video.duration, "publishDate": video.publishDate, "mb": ""
+      "duration": video.duration!.format(), 
+      "publishDate": "${video.publishDate}".substring(0, 16), "mb": ""
     };
     // duration: , id: ,  title: , author: , channelId: ,  publishDate: , description: 
   }
 
   getAudioStream() async {
     var manifest = await yt.videos.streamsClient.getManifest(url);
-    return manifest.audioOnly.toList();
+    return manifest.audioOnly.toList();      
   }
 
   dispose(){
@@ -45,8 +45,10 @@ class YouTube {
     try {
       String path = await Archive.home();
       mb = "${audio.size.totalMegaBytes.toStringAsFixed(2) + 'MB'}";
-      if(Directory(path).existsSync() == false)
+      if(Directory(path).existsSync() == false) {
         Directory(path).createSync();
+      }
+        
       
       fileName = '${path}youtube.${audio.container.name.toString()}';
       audioName = fileName;

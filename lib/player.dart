@@ -30,13 +30,23 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var arg = ModalRoute.of(context)!.settings.arguments;
       href = "$arg";
+      print("$href");
       home = await Archive.home();
       playList = PlayList();
       if(playList.datas.isNotEmpty) {
-
+        for(var i = 0; i < playList.datas.length; i++) {
+          if(href.contains(playList.datas[i]["id"])) {
+            isPlayList = true;
+            video = playList.datas[i];
+            break;
+          }
+        }
       }
-
-      initial();
+      if(isPlayList == false) {
+        initial();
+      } else {
+        setState(() {});
+      }
     });
     WidgetsBinding.instance.addObserver(this);
   }
@@ -99,8 +109,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    // Widget child;
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -134,7 +142,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
             _buildInformation(),
           Expanded(flex: 1, child: Container()),
           if(processing == 100) 
-            Audio(fileName: youTube.audioName, title: video.title),
+            Audio(fileName: youTube.audioName, title: video["title"], author: video["author"]),
           if(processing == -1) 
             _buildBtnGrid() 
           // else  
@@ -150,32 +158,32 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("標題：${video.title}", 
+          Text("標題：${video["title"]}", 
            style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
-          Text("作者：${video.author}", 
+          Text("作者：${video["author"]}", 
            style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
-          Text("日期：${"${video.publishDate}".substring(0, 19)}", 
+          Text("日期：${video["publishDate"]}", 
             style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
-          Text("${video.duration}", 
+          Text("時間：${video["duration"]}", 
             style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
-          if(processing > -1) 
-            Text("${youTube.mb}", 
+          if(processing > -1 && "${video["mb"]}".isNotEmpty) 
+            Text("空間：${video["mb"]}", 
               style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 20,
@@ -331,6 +339,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         onProcessing: (int process) async {
           processing = process;
           if(processing == 100) {
+            video["mb"] = youTube.mb;
+            video["audioName"] = youTube.audioName;
             playList.add(video);
           }
           setState(() { });
@@ -361,20 +371,14 @@ class PlayList {
   add(dynamic data) {
     int index = -1;
     for(var i = 0; i < datas.length; i++) {
-      if(datas[i].id == data.id) {
+      if(datas[i]["id"] == data["id"]) {
         index = i;
         break;
       }
     }
     if(index == -1) {
-      datas.add({
-        "id": data.id, "title": data.title, "author": data.author, 
-        "duration": data.duration, 
-        "publishDate": data.publishDate
-      });
+      datas.add(data);
     }
-
-    // id: ,  title: , author: , duration: , publishDate: , description:, channelId: ,
     write();
   }
 }

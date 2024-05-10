@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
+import 'package:mytube2/system/module.dart';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:mytube2/system/module.dart';
 import 'package:rxdart/rxdart.dart';
 
 AudioPlayerHandler? _audioHandler;
 List<MediaItem> songs = [];
 
 class Audio extends StatefulWidget {
-  final String fileName, title;
-  const Audio({Key? key, required this.fileName, required this.title}) : super(key: key);
+  final String fileName, title, author;
+  const Audio({Key? key, required this.fileName, required this.title, required this.author}) : super(key: key);
   @override
   _AudioState createState() => _AudioState();
 }
@@ -28,17 +29,18 @@ class _AudioState extends State<Audio>{
       songs = [];
       final player = AudioPlayer();
       duration = await player.setUrl(widget.fileName);
+
       var item = MediaItem(
         id: widget.fileName,
         title: widget.title,
-        album: "MyTbue",
+        album: widget.author,
         duration: duration,
       );
       songs.add(item);        
       _audioHandler ??= await AudioService.init(
         builder: () => AudioPlayerHandler(),
         config: const AudioServiceConfig(
-          androidNotificationChannelId: 'com.flutter.mytube2', // 'com.ryanheise.myapp.channel.audio',
+          androidNotificationChannelId: 'com.ryanheise.myapp.channel.audio',
           androidNotificationChannelName: '播放器',
           androidNotificationOngoing: true,
         ),

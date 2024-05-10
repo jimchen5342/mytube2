@@ -1,14 +1,5 @@
 import 'package:external_path/external_path.dart';
 import 'dart:io';
-/*
-await ExternalPath.getExternalStorageDirectories();
-
-await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_MUSIC);
-ExternalPath.DIRECTORY_PICTURES
-ExternalPath.DIRECTORY_DOWNLOADS
-ExternalPath.DIRECTORY_DCIM
-ExternalPath.DIRECTORY_DOCUMENTS
- */
 
 class Archive {
   static Future<String> root() async {
@@ -36,10 +27,6 @@ class Archive {
 
   static  writeText(String fileName, String txt) {
     File file = File(fileName);
-    // if(file.existsSync()) {
-      
-    // }
-    file.writeAsString(txt);
+    file.writeAsStringSync(txt);
   }
 }
-
