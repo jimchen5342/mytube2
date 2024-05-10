@@ -40,12 +40,13 @@ class _AudioState extends State<Audio>{
       _audioHandler ??= await AudioService.init(
         builder: () => AudioPlayerHandler(),
         config: const AudioServiceConfig(
-          androidNotificationChannelId: 'com.ryanheise.myapp.channel.audio',
-          androidNotificationChannelName: '播放器',
+          androidNotificationChannelId: 'com.flutter.mytube2',
+          androidNotificationChannelName: 'MyTube2',
           androidNotificationOngoing: true,
         ),
       );
       _audioHandler!.init();
+      // _audioHandler!.customAction.
       setState(() { });
     });
   }
@@ -169,16 +170,16 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
   final _player = AudioPlayer();
   final currentSong = BehaviorSubject<MediaItem>();
   final currentPosition = BehaviorSubject<Duration>();
-  int oldSeonds = 0;
+  int _oldSeonds = 0;
 
   void init() async {
     _player.playbackEventStream.listen(_broadcastState);
     currentPosition.add(Duration.zero);
 
     AudioService.position.listen((Duration position) {
-      if(position.inSeconds != oldSeonds) {
+      if(position.inSeconds != _oldSeonds) {
         currentPosition.add(position);
-        oldSeonds = position.inSeconds;
+        _oldSeonds = position.inSeconds;
       }
     });
 
@@ -189,6 +190,7 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
     
     queue.add(songs);
     _player.processingStateStream.listen((state) {
+      print("processingStateStream: $state");
       if (state == ProcessingState.completed) skipToNext();
     });
 
@@ -230,9 +232,10 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   /// Broadcasts the current state to all clients.
   void _broadcastState(PlaybackEvent event) {
+    print("PlaybackEvent: $event");
     final playing = _player.playing;
-    
     final queueIndex = songs.indexOf(currentSong.value);
+
     playbackState.add(playbackState.value.copyWith(
       controls: [
         MediaControl.skipToPrevious,

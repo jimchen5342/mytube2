@@ -5,7 +5,6 @@ import 'package:mytube2/audio.dart';
 import 'package:mytube2/system/youtube.dart';
 import 'package:mytube2/system/system.dart';
 import 'package:mytube2/system/module.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 String home = "";
 class Player extends StatefulWidget {
@@ -27,8 +26,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   @override
   void initState() {
     super.initState();
+    var arg = ModalRoute.of(context)!.settings.arguments;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var arg = ModalRoute.of(context)!.settings.arguments;
       href = "$arg";
       print("$href");
       home = await Archive.home();

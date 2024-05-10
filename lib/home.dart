@@ -7,11 +7,9 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:mytube2/system/module.dart';
 import 'package:mytube2/system/system.dart';
-
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -220,7 +218,7 @@ class _HomeState extends State<Home> {
     super.reassemble();
 
     // openPlayer("/watch?v=sTjJ1LlviKM");
-    var s = await alert2("下載完成");
+    var s = await alert("下載完成");
     print(s);
   }
 
