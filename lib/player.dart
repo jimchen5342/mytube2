@@ -82,7 +82,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     } catch(e) {
       print(e);
       await EasyLoading.dismiss();
-      alert(context, e.toString());
+      alert(e.toString());
     } finally {
       
     }
@@ -348,7 +348,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       );
     } catch(e) {
       print(e);
-      alert(context, e.toString());
+      alert(e.toString());
     }
   }
 }

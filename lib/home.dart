@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mytube2/system/system.dart';
 import 'dart:io';
 import 'dart:convert';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:mytube2/system/module.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+import 'package:mytube2/system/module.dart';
+import 'package:mytube2/system/system.dart';
+
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -90,6 +93,8 @@ class _HomeState extends State<Home> {
       
       // EasyLoading.showToast("吐司");
       // openPlayer("/watch?v=sTjJ1LlviKM");
+
+      
     });
   }
 
@@ -214,7 +219,9 @@ class _HomeState extends State<Home> {
   void reassemble() async { // develope mode
     super.reassemble();
 
-    openPlayer("/watch?v=sTjJ1LlviKM");
+    // openPlayer("/watch?v=sTjJ1LlviKM");
+    var s = await alert2("下載完成");
+    print(s);
   }
 
   @override
