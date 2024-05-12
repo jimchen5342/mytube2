@@ -170,16 +170,16 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
   final _player = AudioPlayer();
   final currentSong = BehaviorSubject<MediaItem>();
   final currentPosition = BehaviorSubject<Duration>();
-  int _oldSeonds = 0;
+  int _oldSeconds = 0;
 
   void init() async {
     _player.playbackEventStream.listen(_broadcastState);
     currentPosition.add(Duration.zero);
 
     AudioService.position.listen((Duration position) {
-      if(position.inSeconds != _oldSeonds) {
+      if(position.inSeconds != _oldSeconds) {
         currentPosition.add(position);
-        _oldSeonds = position.inSeconds;
+        _oldSeconds = position.inSeconds;
       }
     });
 
