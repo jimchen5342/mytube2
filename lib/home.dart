@@ -123,6 +123,11 @@ class _HomeState extends State<Home> {
 
   void openPlayer(String href) {
     // href = "/watch?v=UxMABs3NsUc";
+
+    var index = href.indexOf("&t=");
+    if(index > -1) {
+      href = href.substring(0, index);
+    }
     Navigator.pushNamed(context, '/player', arguments: href.trim());
   }
 
