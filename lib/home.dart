@@ -122,7 +122,7 @@ class _HomeState extends State<Home> {
   }
 
   void openPlayer(String href) {
-    href = "/watch?v=UxMABs3NsUc";
+    // href = "/watch?v=UxMABs3NsUc";
     Navigator.pushNamed(context, '/player', arguments: href.trim());
   }
 
