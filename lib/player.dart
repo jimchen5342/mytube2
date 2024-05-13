@@ -34,9 +34,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var arg = ModalRoute.of(context)!.settings.arguments;
-
       href = "$arg";
-      print("$href");
+      // print("href: $href");
       home = await Archive.home();
       playList = PlayList();
       if(playList.datas.isNotEmpty) {
@@ -358,7 +357,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       )
     );
   }
-
 
   Widget _controllerBtn(IconData iconData, VoidCallback onPressed, {bool visible = true}){
     Widget btn = IconButton(
