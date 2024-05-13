@@ -421,7 +421,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
               )
             ),
             if(currentPosition > 0)
-              Text("-" + Duration(seconds: (xx - currentPosition).toInt()).format(), 
+              Text("-${Duration(seconds: (xx - currentPosition).toInt()).format()}", 
                 style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 20,
