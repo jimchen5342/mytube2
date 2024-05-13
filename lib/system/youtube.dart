@@ -48,8 +48,7 @@ class YouTube {
       if(Directory(path).existsSync() == false) {
         Directory(path).createSync();
       }
-        
-      
+
       fileName = '${path}youtube.${audio.container.name.toString()}';
       audioName = fileName;
       var file = File(fileName);

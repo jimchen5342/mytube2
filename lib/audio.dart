@@ -6,8 +6,9 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
+// 不要了，2024-05-12 
 AudioPlayerHandler? _audioHandler;
-List<MediaItem> songs = [];
+
 
 class Audio extends StatefulWidget {
   final String fileName, title, author;
@@ -26,7 +27,6 @@ class _AudioState extends State<Audio>{
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      songs = [];
       final player = AudioPlayer();
       duration = await player.setUrl(widget.fileName);
 
@@ -36,7 +36,6 @@ class _AudioState extends State<Audio>{
         album: widget.author,
         duration: duration,
       );
-      songs.add(item);        
       _audioHandler ??= await AudioService.init(
         builder: () => AudioPlayerHandler(),
         config: const AudioServiceConfig(
@@ -45,7 +44,7 @@ class _AudioState extends State<Audio>{
           androidNotificationOngoing: true,
         ),
       );
-      _audioHandler!.init();
+      _audioHandler!.init(item);
       // _audioHandler!.customAction.
       setState(() { });
     });
@@ -67,22 +66,20 @@ class _AudioState extends State<Audio>{
     if(_audioHandler != null) {
       _audioHandler!.stop();
     }
-    _audioHandler = null;
-    songs = [];
+    // _audioHandler = null;
   }
    
   @override
   Widget build(BuildContext context) {
     return Container(
       padding:  const EdgeInsets.all(5),
-      child: Column(
+      child: _audioHandler == null ? null :
+        Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if(_audioHandler != null)
             _buildSlider(),
           const SizedBox(height: 5),
-          if(_audioHandler != null)
             _buildControls()
         ]
       )
@@ -171,8 +168,9 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
   final currentSong = BehaviorSubject<MediaItem>();
   final currentPosition = BehaviorSubject<Duration>();
   int _oldSeconds = 0;
+  List<MediaItem> songs = [];
 
-  void init() async {
+  void init(MediaItem mediaItem) async {
     _player.playbackEventStream.listen(_broadcastState);
     currentPosition.add(Duration.zero);
 
@@ -184,10 +182,11 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
     });
 
     if(queue.value.isNotEmpty) {
+      songs = [];
       stop();
       queue.value.clear();
     }
-    
+    songs.add(mediaItem);
     queue.add(songs);
     _player.processingStateStream.listen((state) {
       print("processingStateStream: $state");

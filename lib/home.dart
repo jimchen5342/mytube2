@@ -122,7 +122,8 @@ class _HomeState extends State<Home> {
   }
 
   void openPlayer(String href) {
-    Navigator.pushNamed(context, '/player', arguments: href);
+    href = "/watch?v=UxMABs3NsUc";
+    Navigator.pushNamed(context, '/player', arguments: href.trim());
   }
 
   void setLeast() async { // 最新上傳
@@ -212,14 +213,10 @@ class _HomeState extends State<Home> {
     // writeFile();
   }
 
-
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-
     // openPlayer("/watch?v=sTjJ1LlviKM");
-    var s = await alert("下載完成");
-    print(s);
   }
 
   @override
