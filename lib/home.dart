@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:mytube2/system/module.dart';
 import 'package:mytube2/system/system.dart';
 
+
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
     super.initState();
     EasyLoading.show(status: 'loading...');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Archive.home();
+      String home = await Archive.home();
       final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
             const PlatformWebViewControllerCreationParams());
@@ -85,10 +86,14 @@ class _HomeState extends State<Home> {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       }, 300);
 
+      var playlist = PlayList();
+      playlist.trim(home);
+
       setTimeout(() {
         EasyLoading.dismiss();
       }, 1000 * 3);
-      
+
+
     });
 
   }
@@ -215,6 +220,9 @@ class _HomeState extends State<Home> {
   void reassemble() async { // develope mode
     super.reassemble();
     // openPlayer("/watch?v=sTjJ1LlviKM");
+    String home = await Archive.home();
+    var playlist = PlayList();
+      playlist.trim(home);
   }
 
   @override
@@ -249,5 +257,35 @@ class _HomeState extends State<Home> {
       color: Colors.white,
       child: (permission == false) ? null : WebViewWidget(controller: _controller),
     );
+  }
+}
+
+class PlayList {
+
+  // PlayList() { }
+
+  trim(String home) { // 清除 7 天前的檔案
+    List datas = [];
+    bool b = false;
+    String s = Archive.readText("${home}playlist.txt");
+    if(s.isNotEmpty) {
+      datas = jsonDecode(s);
+    }
+    var days7 = DateTime.now().subtract(const Duration(days: 7)).formate(pattern: "yyMMdd"); 
+    String key = '${home}yt-$days7';
+    for(var i = datas.length - 1; i >= 0; i--){
+      String audioName = datas[i]["audioName"];
+      if(audioName.compareTo(key) == -1) {
+        var f3 = File(audioName);
+        if (f3.existsSync()) {
+          f3.deleteSync();
+        }
+        datas.removeAt(i);
+        b = true;
+      }
+    }
+    if(b == true){
+      Archive.writeText("${home}playlist.txt", jsonEncode(datas));
+    }
   }
 }

@@ -501,16 +501,6 @@ class PlayList {
     }
   }
 
-  trim() { // 清除 7 天前的檔案
-    var today = DateTime.now().subtract(const Duration(days: 7)).formate(pattern: "yyMMdd"); 
-    // String today =  DateTime.now().formate(pattern: "yyMMdd");
-    String key = '${home}yt-${today}.';
-    for(var i = datas.length - 1; i >= 0; i--){
-      // datas[i]["audioName"]
-    }
-
-  }
-
   write() {
     Archive.writeText("${home}playlist.txt", jsonEncode(datas));
   }
