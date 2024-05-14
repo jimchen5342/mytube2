@@ -49,7 +49,9 @@ class YouTube {
         Directory(path).createSync();
       }
 
-      fileName = '${path}youtube.${audio.container.name.toString()}';
+      String today =  DateTime.now().formate(pattern: "yyMMddTHHmmss");
+
+      fileName = '${path}yt-${today}.${audio.container.name.toString()}';
       audioName = fileName;
       var file = File(fileName);
       removeFile(fileName);
@@ -85,8 +87,9 @@ class YouTube {
     }
     return fileName;
   }
+  
   removeFile(String fileName) {
-    if(fileName.contains("youtube.")) {
+    if(fileName.contains("yt-")) {
       var i = fileName.lastIndexOf(".");
       List f1 = ['3gpp', 'webm', 'mp4'];
       String f2 = fileName.substring(0, i + 1);

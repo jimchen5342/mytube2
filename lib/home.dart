@@ -89,18 +89,11 @@ class _HomeState extends State<Home> {
         EasyLoading.dismiss();
       }, 1000 * 3);
       
-      // EasyLoading.showToast("吐司");
-      // openPlayer("/watch?v=sTjJ1LlviKM");
-
-      
     });
+
   }
 
   onPageFinished(String url) async {
-    DateFormat formatter = DateFormat("mm:ss"); // "yyyy/MM/dd HH:mm:ss"
-
-    // print("onPageFinished: $url, ${formatter.format(DateTime.now())} ");
-
     if(this.url == url) return;
     this.url = url;
     if(url == "https://m.youtube.com/" ) {
