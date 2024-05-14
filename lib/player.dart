@@ -483,7 +483,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           androidNotificationChannelId: 'com.flutter.mytube2',
           androidNotificationChannelName: 'MyTube2',
           androidNotificationOngoing: true,
-          // androidNotificationIcon: "mipmap/ic_launcher" 沒有效
+          androidNotificationIcon: "drawable/ic_stat_music_note"
         ),
       );
       _audioHandler!.init(item);
