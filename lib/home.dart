@@ -86,12 +86,11 @@ class _HomeState extends State<Home> {
         _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       }, 300);
 
-      var playlist = PlayList();
-      playlist.trim(home);
+      await PlayList.trim(home);
 
       setTimeout(() {
         EasyLoading.dismiss();
-      }, 1000 * 3);
+      }, 1000 * 1);
 
 
     });
@@ -220,9 +219,8 @@ class _HomeState extends State<Home> {
   void reassemble() async { // develope mode
     super.reassemble();
     // openPlayer("/watch?v=sTjJ1LlviKM");
-    String home = await Archive.home();
-    var playlist = PlayList();
-      playlist.trim(home);
+    // String home = await Archive.home();
+    // await  PlayList.trim(home);
   }
 
   @override
@@ -264,7 +262,13 @@ class PlayList {
 
   // PlayList() { }
 
-  trim(String home) { // 清除 7 天前的檔案
+  static trim(String home) async { // 清除 7 天前的檔案
+    String today = DateTime.now().formate(pattern: "yyMMdd");
+    String today2 = await Storage.getString("trim-date");
+    if(today2 == today) {
+      return;
+    }
+
     List datas = [];
     bool b = false;
     String s = Archive.readText("${home}playlist.txt");
@@ -287,5 +291,6 @@ class PlayList {
     if(b == true){
       Archive.writeText("${home}playlist.txt", jsonEncode(datas));
     }
+    await Storage.setString("trim-date", today);
   }
 }
