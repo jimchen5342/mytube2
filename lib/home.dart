@@ -168,8 +168,8 @@ class _HomeState extends State<Home> {
       let xx = document.querySelectorAll("$cls");
       xx.forEach((item, index) =>{
         let href = item.getAttribute("href");
-        if(href != null && href.indexOf("javascr") == -1) {
-          if(index == 2) console.log(href)
+        if(href != null && href.indexOf("javascr") == -1 && href.indexOf("/watch?v=") > -1) {
+          // if(index == 2) console.log(href)
           item.setAttribute("href", "javascript:void(0);");
           item.setAttribute("_href", href);
           item.addEventListener("click", onAnchorClick, false)
@@ -263,9 +263,9 @@ class PlayList {
   // PlayList() { }
 
   static trim(String home) async { // 清除 7 天前的檔案
-    String today = DateTime.now().formate(pattern: "yyMMdd");
+    String today1 = DateTime.now().formate(pattern: "yyMMdd");
     String today2 = await Storage.getString("trim-date");
-    if(today2 == today) {
+    if(today2 == today1) {
       return;
     }
 
@@ -288,9 +288,20 @@ class PlayList {
         b = true;
       }
     }
+
+    List<String> archives = await Archive.getFiles(home);
+    for(var i = archives.length - 1; i >= 0; i--){
+      var archive = '$home${archives[i]}';
+      if(archives[i].startsWith("yt-") && archive.compareTo(key) == -1) {
+        var f3 = File(archive);
+        if (f3.existsSync()) {
+          f3.deleteSync();
+        }
+      }
+    }
     if(b == true){
       Archive.writeText("${home}playlist.txt", jsonEncode(datas));
     }
-    await Storage.setString("trim-date", today);
+    await Storage.setString("trim-date", today1);
   }
 }

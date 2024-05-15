@@ -29,4 +29,26 @@ class Archive {
     File file = File(fileName);
     file.writeAsStringSync(txt);
   }
+
+  static Future<List<String>> getFiles(String directoryPath) async {
+    List<String> list = [];
+    var dirList1 = Directory(directoryPath).list();
+    await for (final FileSystemEntity f1 in dirList1) {
+      if(f1 is File && isMusic(f1)) {
+        var paths = f1.path.split('/');
+        String title = paths[paths.length - 1];
+        list.add(title);
+      }
+    }
+    // return list..sort();
+    return list..sort((b, a) => a.compareTo(b));
+  }
+
+  static bool isMusic(File file) {
+    return file.path.toLowerCase().endsWith('.mp3') 
+      || file.path.toLowerCase().endsWith('.mp4')
+      || file.path.toLowerCase().endsWith('.3gpp')
+      || file.path.toLowerCase().endsWith('.webm');
+  }
+
 }
