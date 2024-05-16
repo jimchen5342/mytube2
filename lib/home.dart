@@ -297,6 +297,11 @@ class PlayList {
         if (f3.existsSync()) {
           f3.deleteSync();
         }
+      } else {
+        var f3 = File(archive);
+        if( f3.lengthSync() == 0){
+          f3.deleteSync();
+        }
       }
     }
     if(b == true){
