@@ -75,15 +75,22 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       streams = await youTube.getAudioStream();
       var size = 0.0, index = 0;
       for(int i = 0; i < streams.length; i++){
+        if(streams[i].size.totalMegaBytes == 0) continue;
         // print("MyTube.audio $i: ${streams[i].size.totalMegaBytes.toStringAsFixed(2) + 'MB'} ==");
         if(streams[i].size.totalMegaBytes < size || i == 0) {
           size = streams[i].size.totalMegaBytes;
           index = i;
         }
       }
-      qualityMedium = index;
+      if(index > -1) {
+        qualityMedium = index;
+      }
+
       setState(() {});
       EasyLoading.dismiss();
+      if(index == -1) {
+        alert("沒有串流檔");
+      }
     } catch(e) {
       print(e);
       await EasyLoading.dismiss();

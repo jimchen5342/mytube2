@@ -24,7 +24,7 @@ class YouTube {
     
     return {"id": url, "title": video.title, "author": video.author, 
       "duration": video.duration!.format(), 
-      "publishDate": "${video.publishDate}".substring(0, 16), "mb": ""
+      "publishDate": "${video.publishDate!.toLocal()}".substring(0, 16), "mb": ""
     };
     // duration: , id: ,  title: , author: , channelId: ,  publishDate: , description: 
   }
