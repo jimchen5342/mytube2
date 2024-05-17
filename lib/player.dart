@@ -175,6 +175,14 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   }
 
   Widget _buildInformation() {
+    // Map<String, String> list = {
+    //   "標題": "title",
+    //   "作者": "author"
+    // };
+    // list.forEach((key, value) {
+    //   print("key: ${key}, value: ${value}");
+    // });
+    
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -186,26 +194,30 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
               fontSize: 20,
             )
           ),
+          const SizedBox(height: 5),
           Text("作者：${video["author"]}", 
            style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
+          const SizedBox(height: 5),
           Text("日期：${video["publishDate"]}", 
             style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
-          Text("時間：${video["duration"]}", 
+          const SizedBox(height: 5),
+          Text("長度：${video["duration"]}", 
             style: const TextStyle(
               // color: Colors.white,
               fontSize: 20,
             )
           ),
+          const SizedBox(height: 5),
           if("${video["mb"]}".isNotEmpty) 
-            Text("空間：${video["mb"]}", 
+            Text("容量：${video["mb"]}", 
               style: const TextStyle(
                   // color: Colors.white,
                   fontSize: 20,
@@ -249,8 +261,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       // padding: EdgeInsets.all(0.0),
       child:  GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cells, //每行三列
-            childAspectRatio: 1.2, //显示区域宽高相等
+            crossAxisCount: cells,
+            childAspectRatio: 1.2,
             mainAxisSpacing: 5.0,
             crossAxisSpacing: 5.0,
         ),
