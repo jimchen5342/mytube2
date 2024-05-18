@@ -279,82 +279,35 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           }
           
           return Material(
+            color: bg,
             child: InkWell(
               onTap: () async {
                 choiceVideo(index);
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  color: bg
-                ),
-                padding: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text( mb,
-                      style: TextStyle(
-                        color: color,
-                        fontSize: fontSize,
-                      ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text( mb,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: fontSize,
                     ),
-                    Container(height: 5,),
-                    Text("${streams[index].container.name.toString()}",
-                      style: TextStyle(
-                        color: color,
-                        fontSize: fontSize,
-                      ),
+                  ),
+                  Container(height: 2,),
+                  Text(streams[index].container.name.toString(),
+                    style: TextStyle(
+                      color: color,
+                      fontSize: fontSize,
                     ),
-                  ],
-                )
+                  ),
+                ],
+              )
             )
-          )
-        ); 
+          );
         }
       )
     );
-  }
-
-  Widget _buildFooter_not_use() { // 沒在用
-    double height = MediaQuery.of(context).size.height;
-    return Row(children: [
-      if(processing > -1) 
-        ElevatedButton(
-          style: ButtonStyle(textStyle: MaterialStateProperty.all( const TextStyle(fontSize: 18)),
-            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15, vertical: height > 800 ? 10 : 5))
-          ),
-          onPressed: () async {
-            // if(download.streams == null){
-            //   download.title = "";
-            //   streamsTimes = 1;
-            // }
-            // download.stop = true;
-            // processing = -1;
-            // setState(() {});
-            // player = null;
-            // if(download.streams == null)
-            //   await getStream();
-          },
-          child: const Text('重新選擇'),
-        ),
-      if(processing == 100) Container(width: 5),
-      if(processing == 100) 
-        ElevatedButton(
-          child: Text('另存新檔'),
-          style: ButtonStyle(textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
-            padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15, vertical:  height > 800 ? 10 : 5))
-          ),
-          onPressed: () async {
-            // fileSave(context, 
-            //   videoKey: videoKey,
-            //   fileName: download.fileName,
-            //   title: this.widget.playItem["title"] is String ? this.widget.playItem["title"] : download.title, 
-            //   author: this.widget.playItem["author"] is String ? this.widget.playItem["author"] : download.author
-            // ); 
-          },
-        )
-    ]);
   }
 
   Widget _buildPlayerController() {
