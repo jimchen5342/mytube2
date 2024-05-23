@@ -16,6 +16,7 @@ void configLoading() {
     ..indicatorSize = 45.0
     ..radius = 10.0
     ..loadingStyle = EasyLoadingStyle.dark
+    ..toastPosition = EasyLoadingToastPosition.bottom
     // ..loadingStyle = EasyLoadingStyle.custom
     // ..backgroundColor = Colors.green
     // ..indicatorColor = Colors.yellow

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   List streams = [];
   late PlayList playList;
   bool isPlayList = false;
+  var timerChoice;
   
   @override
   void initState() {
@@ -87,9 +89,15 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       }
 
       setState(() {});
-      EasyLoading.dismiss();
+      
       if(index == -1) {
         alert("沒有串流檔");
+      } else {
+        int sec = 5;
+        EasyLoading.dismiss();
+        EasyLoading.showToast("$sec 秒後，自動選取第 ${qualityMedium + 1} 個選項!!");
+
+        timerChoice = Timer(Duration(seconds: sec), () => choiceVideo(qualityMedium));
       }
     } catch(e) {
       print(e);
@@ -174,15 +182,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     );
   }
 
-  Widget _buildInformation() {
-    // Map<String, String> list = {
-    //   "標題": "title",
-    //   "作者": "author"
-    // };
-    // list.forEach((key, value) {
-    //   print("key: ${key}, value: ${value}");
-    // });
-    
+  Widget _buildInformation() {    
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -407,7 +407,9 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   }
 
   void choiceVideo(index) async {
-    // if(timerChoice != null) timerChoice.cancel();
+    if(timerChoice != null) timerChoice.cancel();
+    EasyLoading.dismiss();
+  
     var audio = streams.elementAt(index);
     try {
       await getVideo(audio);
