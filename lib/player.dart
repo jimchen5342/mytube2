@@ -21,7 +21,7 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
-  int qualityMedium = -1, processing = -1;
+  int qualityMedium = -1, processing = -1, sec = 5;
   Map<String, dynamic> playItem = {};
   late YouTube youTube;
   dynamic video;
@@ -93,10 +93,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       if(index == -1) {
         alert("沒有串流檔");
       } else {
-        int sec = 5;
         EasyLoading.dismiss();
-        EasyLoading.showToast("$sec 秒後，自動選取第 ${qualityMedium + 1} 個選項!!");
-
         timerChoice = Timer(Duration(seconds: sec), () => choiceVideo(qualityMedium));
       }
     } catch(e) {
@@ -104,9 +101,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       await EasyLoading.dismiss();
       alert(e.toString());
     } finally {
-      
     }
-    
   }
 
   @override
@@ -173,6 +168,11 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           ),
           if(processing == 100 || isPlayList) 
             _buildPlayerController(),
+          if(qualityMedium > -1 && timerChoice != null)
+            Text("$sec 秒後，自動選取第 ${qualityMedium + 1} 個選項!!",style: const TextStyle(
+              color: Colors.red,
+              fontSize: 20,
+            )),
           if(processing == -1) 
             _buildBtnGrid() 
           // else  
@@ -407,7 +407,10 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   }
 
   void choiceVideo(index) async {
-    if(timerChoice != null) timerChoice.cancel();
+    if(timerChoice != null) {
+      timerChoice.cancel();
+      timerChoice = null;
+    }
     EasyLoading.dismiss();
   
     var audio = streams.elementAt(index);
