@@ -117,14 +117,15 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void openPlayer(String href) {
+  void openPlayer(String href) async {
     // href = "/watch?v=UxMABs3NsUc";
-
+    final now = DateTime.now();
+    
     var index = href.indexOf("&t=");
     if(index > -1) {
       href = href.substring(0, index);
     }
-    Navigator.pushNamed(context, '/player', arguments: href.trim());
+    await Navigator.pushNamed(context, '/player', arguments: href.trim());
   }
 
   void setLeast() async { // 最新上傳
