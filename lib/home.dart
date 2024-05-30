@@ -18,7 +18,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home>  with WidgetsBindingObserver {
   bool permission = false;
   late final WebViewController _controller;
   String url = "";
@@ -26,6 +26,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+
     EasyLoading.show(status: 'loading...');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       String home = await Archive.home();
@@ -91,7 +93,6 @@ class _HomeState extends State<Home> {
         EasyLoading.dismiss();
       }, 1000 * 1);
 
-
     });
 
   }
@@ -120,12 +121,15 @@ class _HomeState extends State<Home> {
   void openPlayer(String href) async {
     // href = "/watch?v=UxMABs3NsUc";
     final now = DateTime.now();
-    
     var index = href.indexOf("&t=");
     if(index > -1) {
       href = href.substring(0, index);
     }
     await Navigator.pushNamed(context, '/player', arguments: href.trim());
+    Duration difference = DateTime.now().difference(now);
+    if(difference.inMinutes >= 20) {
+      _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
+    }
   }
 
   void setLeast() async { // 最新上傳
@@ -231,6 +235,20 @@ class _HomeState extends State<Home> {
   @override
   dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    // if(AppLifecycleState.resumed == state) {
+    //   // Duration difference = DateTime.now().difference(now);
+    //   // if(difference.inMinutes >= 2) {
+    //   //   _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
+    //   // }
+    // }
+    // else if(AppLifecycleState.paused == state) {
+    //   int stackDepth = Navigator.of(context).widget.pages.length;
+    //   print("stackDepth: $stackDepth"); // 沒有用
+    // }
   }
   @override
   Widget build(BuildContext context) {
