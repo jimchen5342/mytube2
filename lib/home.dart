@@ -126,7 +126,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     Duration difference = DateTime.now().difference(now);
     if(difference.inMinutes >= 20) {
       EasyLoading.show(status: 'loading...');
-
+      url = "";
       _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
 
       await setTimeoutAsync(1000 * 1);
@@ -245,6 +245,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     // if(AppLifecycleState.resumed == state) {
     //   // Duration difference = DateTime.now().difference(now);
     //   // if(difference.inMinutes >= 2) {
+    //   //   url = "";
     //   //   _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
     //   // }
     // }
