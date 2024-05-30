@@ -83,16 +83,13 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       await initial();
       setState(() {});
 
-      setTimeout(() {
-        _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
-      }, 300);
+      await setTimeoutAsync(300);
+      _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
 
       await PlayList.trim(home);
 
-      setTimeout(() {
-        EasyLoading.dismiss();
-      }, 1000 * 1);
-
+      await setTimeoutAsync(1000 * 1);
+      EasyLoading.dismiss();
     });
 
   }
@@ -128,7 +125,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     await Navigator.pushNamed(context, '/player', arguments: href.trim());
     Duration difference = DateTime.now().difference(now);
     if(difference.inMinutes >= 20) {
+      EasyLoading.show(status: 'loading...');
+
       _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
+
+      await setTimeoutAsync(1000 * 1);
+      EasyLoading.dismiss();
     }
   }
 
@@ -237,6 +239,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     // if(AppLifecycleState.resumed == state) {
@@ -250,6 +253,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     //   print("stackDepth: $stackDepth"); // 沒有用
     // }
   }
+  
   @override
   Widget build(BuildContext context) {
     return PopScope(

@@ -7,8 +7,11 @@ export 'package:flutter_platform_alert/flutter_platform_alert.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 export 'package:flutter_easyloading/flutter_easyloading.dart';
 
-Future<void> setTimeout(Function() callback, int ms) async {
-  await Future.delayed(Duration(milliseconds: ms), callback); 
+Future<void> setTimeoutAsync(int ms) async {
+  print("setTimeoutAsync: ${DateTime.now()}, ms: $ms");
+  await Future.delayed(Duration(milliseconds: ms));
+  print("setTimeoutAsync: ${DateTime.now()}");
+  return;
 }
 
 Future<String> alert(String text, {AlertButtonStyle btn = AlertButtonStyle.ok}) async {
