@@ -22,10 +22,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   bool permission = false;
   late final WebViewController _controller;
   String url = "";
+  DateTime? lastTime;
 
   @override
   void initState() {
     super.initState();
+    lastTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
 
     EasyLoading.show(status: 'loading...');
@@ -116,6 +118,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   }
 
   void openPlayer(String href) async {
+    lastTime = null;
     // href = "/watch?v=UxMABs3NsUc";
     final now = DateTime.now();
     var index = href.indexOf("&t=");
@@ -123,15 +126,8 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       href = href.substring(0, index);
     }
     await Navigator.pushNamed(context, '/player', arguments: href.trim());
-    Duration difference = DateTime.now().difference(now);
-    if(difference.inMinutes >= 20) {
-      EasyLoading.show(status: 'loading...');
-      url = "";
-      _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
-
-      await setTimeoutAsync(1000 * 1);
-      EasyLoading.dismiss();
-    }
+    reload(now);
+    lastTime = DateTime.now();
   }
 
   void setLeast() async { // 最新上傳
@@ -201,6 +197,16 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     ''');
   }
 
+  void reload(DateTime last) async {
+    Duration difference = DateTime.now().difference(last);
+    if(difference.inMinutes >= 30) {
+      EasyLoading.show(status: 'loading...');
+      url = "";
+      _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
+      await setTimeoutAsync(1000 * 1);
+      EasyLoading.dismiss();
+    }
+  }
   initial() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
@@ -242,17 +248,15 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    // if(AppLifecycleState.resumed == state) {
-    //   // Duration difference = DateTime.now().difference(now);
-    //   // if(difference.inMinutes >= 2) {
-    //   //   url = "";
-    //   //   _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
-    //   // }
-    // }
-    // else if(AppLifecycleState.paused == state) {
-    //   int stackDepth = Navigator.of(context).widget.pages.length;
-    //   print("stackDepth: $stackDepth"); // 沒有用
-    // }
+    // print("AppLifecycleState: $state, ${DateTime.now()}");
+
+    if(lastTime == null) return;
+    if(AppLifecycleState.resumed == state) {
+      reload(lastTime!);
+    }
+    else if(AppLifecycleState.paused == state) {
+      lastTime = DateTime.now();
+    }
   }
   
   @override
