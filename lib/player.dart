@@ -392,7 +392,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
                 },
               )
             ),
-            if(currentPosition > 0)
+            // if(currentPosition > 0)
               Text("-${Duration(seconds: (xx - currentPosition).toInt()).format()}", 
                 style: const TextStyle(
                   // color: Colors.white,
@@ -551,6 +551,7 @@ class AudioPlayerHandler extends BaseAudioHandler with QueueHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
+    await _player.seek(Duration.zero);
     await playbackState.firstWhere(
         (state) => state.processingState == AudioProcessingState.idle);
   }
