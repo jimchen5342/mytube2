@@ -118,8 +118,10 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   }
 
   void openPlayer(String href) async {
+    // print(href);
+    // href="/watch?v=PwlvLFb1kgk"; // href = "/watch?v=UxMABs3NsUc";
     lastTime = null;
-    // href = "/watch?v=UxMABs3NsUc";
+    
     final now = DateTime.now();
     var index = href.indexOf("&t=");
     if(index > -1) {
