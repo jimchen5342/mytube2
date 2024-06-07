@@ -21,14 +21,15 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   String href = "";
-  int qualityMedium = -1, processing = -1, sec = 5;
+  int qualityMedium = -1, processing = -1;
   Map<String, dynamic> playItem = {};
   late YouTube youTube;
   dynamic video;
   List streams = [];
   late PlayList playList;
   bool isPlayList = false;
-  var timerChoice;
+  Timer? timerChoice;
+  int counter = 5;
   
   @override
   void initState() {
@@ -94,7 +95,9 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
         alert("沒有串流檔");
       } else {
         EasyLoading.dismiss();
-        timerChoice = Timer(Duration(seconds: sec), () => choiceVideo(qualityMedium));
+        // timerChoice = Timer(Duration(seconds: sec), () => choiceVideo(qualityMedium));
+
+        startTimer();
       }
     } catch(e) {
       print(e);
@@ -115,6 +118,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     if(_audioHandler != null) {
       _audioHandler!.stop();
     }
+    stopTimer();
   }
   
   @override
@@ -168,8 +172,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           ),
           if(processing == 100 || isPlayList) 
             _buildPlayerController(),
-          if(qualityMedium > -1 && timerChoice != null)
-            Text("$sec 秒後，自動選取第 ${qualityMedium + 1} 個選項!!",style: const TextStyle(
+          if(qualityMedium > -1 && counter > 0)
+            Text("$counter 秒後，自動選取第 ${qualityMedium + 1} 個選項!!",style: const TextStyle(
               color: Colors.red,
               fontSize: 20,
             )),
@@ -408,8 +412,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   void choiceVideo(index) async {
     if(timerChoice != null) {
-      timerChoice.cancel();
-      timerChoice = null;
+      stopTimer();
     }
     EasyLoading.dismiss();
   
@@ -465,6 +468,28 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       );
       _audioHandler!.init(item);
       setState(() {});
+  }
+
+  void startTimer() {
+    counter = 5; setState(() { });
+    timerChoice = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      counter--;
+      print('Timer tick: $counter');
+
+      if (counter == 0) {
+        choiceVideo(qualityMedium);
+        stopTimer();
+      }
+      setState(() { });
+    });
+  }
+
+  // 停止計時器
+  void stopTimer() {
+    if (timerChoice != null) {
+      timerChoice!.cancel();
+      timerChoice = null;
+    }
   }
 }
 
