@@ -32,6 +32,8 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
 
     EasyLoading.show(status: 'loading...');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await initial();
+
       String home = await Archive.home();
       final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
@@ -82,7 +84,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
         );
       _controller = controller;
 
-      await initial();
       setState(() {});
 
       await setTimeoutAsync(300);
@@ -304,8 +305,8 @@ class PlayList {
     if(s.isNotEmpty) {
       datas = jsonDecode(s);
     }
-    var days7 = DateTime.now().subtract(const Duration(days: 7)).formate(pattern: "yyMMdd"); 
-    String key = '${home}yt-$days7';
+    var days = DateTime.now().subtract(const Duration(days: 4)).formate(pattern: "yyMMdd"); 
+    String key = '${home}yt-$days';
     for(var i = datas.length - 1; i >= 0; i--){
       String audioName = datas[i]["audioName"];
       if(audioName.compareTo(key) == -1) {

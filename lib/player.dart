@@ -29,7 +29,8 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   late PlayList playList;
   bool isPlayList = false;
   Timer? timerChoice;
-  int counter = 5;
+  int counter = -1;
+  bool destroied = false;
   
   @override
   void initState() {
@@ -96,13 +97,13 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       } else {
         EasyLoading.dismiss();
         // timerChoice = Timer(Duration(seconds: sec), () => choiceVideo(qualityMedium));
-
         startTimer();
       }
     } catch(e) {
-      print(e);
       await EasyLoading.dismiss();
-      alert(e.toString());
+      if(destroied == false) {
+        alert(e.toString());
+      }
     } finally {
     }
   }
@@ -110,6 +111,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
   @override
   dispose() {
     super.dispose();
+    destroied = true;
     WidgetsBinding.instance.removeObserver(this);
     if(isPlayList == false) {
       youTube.dispose();
@@ -161,7 +163,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       padding: const EdgeInsets.all(5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded( flex: 1, 
             child: Scrollbar(
@@ -175,12 +177,10 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
           if(qualityMedium > -1 && counter > 0)
             Text("$counter 秒後，自動選取第 ${qualityMedium + 1} 個選項!!",style: const TextStyle(
               color: Colors.red,
-              fontSize: 20,
+              fontSize: 22,
             )),
-          if(processing == -1) 
-            _buildBtnGrid() 
-          // else  
-          //   _buildFooter(),
+          if(video != null && processing == -1) 
+            _buildBtnGrid(),
         ],
       )
     );
@@ -441,7 +441,19 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
       );
     } catch(e) {
       print(e);
-      alert(e.toString());
+      if(destroied == false) {
+        String result = await alert("重新載入？\n\n${e.toString().substring(0, 500)}", btn: AlertButtonStyle.yesNo);
+        if(result == "yes") {
+          video = null;
+          counter = -1;
+          qualityMedium = -1;
+          setState(() {
+            initial();
+          });
+        } else {
+          Navigator.pop(context);
+        }
+      }
     }
   }
 
@@ -474,7 +486,6 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
     counter = 5; setState(() { });
     timerChoice = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       counter--;
-      print('Timer tick: $counter');
 
       if (counter == 0) {
         choiceVideo(qualityMedium);
@@ -486,6 +497,7 @@ class _PlayerState extends State<Player>  with WidgetsBindingObserver{
 
   // 停止計時器
   void stopTimer() {
+    counter = -1;
     if (timerChoice != null) {
       timerChoice!.cancel();
       timerChoice = null;

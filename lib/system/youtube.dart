@@ -83,7 +83,9 @@ class YouTube {
       }
     } catch(e) {
       print(e);
-      throw e;
+      if(stop == false) {
+        throw e;
+      }
     }
     return fileName;
   }
