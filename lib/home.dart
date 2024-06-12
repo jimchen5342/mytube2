@@ -234,8 +234,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   void reassemble() async { // develope mode
     super.reassemble();
     // openPlayer("/watch?v=sTjJ1LlviKM");
-    // String home = await Archive.home();
-    // await  PlayList.trim(home);
+    // await  PlayList.trim(await Archive.home());
   }
 
   @override
