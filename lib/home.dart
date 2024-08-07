@@ -6,10 +6,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:intl/intl.dart';
 
 import 'package:mytube2/system/module.dart';
 import 'package:mytube2/system/system.dart';
+import 'package:mytube2/DialogLock.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -23,6 +23,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   late final WebViewController _controller;
   String url = "";
   DateTime? lastTime;
+  bool locked = false;
 
   @override
   void initState() {
@@ -233,8 +234,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-    // openPlayer("/watch?v=sTjJ1LlviKM");
-    // await  PlayList.trim(await Archive.home());
+        // await  PlayList.trim(await Archive.home());
   }
 
   @override
@@ -263,19 +263,51 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) async {
-        if (didPop) {
-          return;
-        }
-        if(await _controller.currentUrl() == "https://m.youtube.com/") {
-          exit(0);
-        } else {
-          await _controller.goBack();
-        }
-      },
-      child: webview()
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          // leading: IconButton(
+          //   icon: const Icon( Icons.arrow_back_ios_sharp, color: Colors.white,),
+          //   onPressed: () => Navigator.pop(context),
+          // ),
+          title: const Text('MyTube2', 
+            style: TextStyle(
+              color: Colors.white,
+              // fontSize: 20,
+            )
+          ),
+          actions:<Widget>[
+            IconButton(
+              icon: Icon(locked == true ? Icons.lock_open : Icons.lock, color: Colors.white),
+              onPressed: () {
+                showListDialog();
+              },
+            ),
+            IconButton(
+              icon: const Icon( Icons.refresh_sharp, color: Colors.white),
+              onPressed: () {
+                reload(DateTime.parse('2024-01-01 00:00:00.000'));
+              },
+            )
+          ],
+          backgroundColor: Colors.blue, 
+          // backgroundColor: const Color.fromRGBO(192, 25, 33, 0), 
+        ),
+        body:PopScope(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (didPop) {
+              return;
+            }
+            if(await _controller.currentUrl() == "https://m.youtube.com/") {
+              exit(0);
+            } else {
+              await _controller.goBack();
+            }
+          },
+          child: webview()
+        ), 
+      )
     );
   }
 
@@ -283,6 +315,21 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     return Container(
       color: Colors.white,
       child: (permission == false) ? null : WebViewWidget(controller: _controller),
+    );
+  }
+
+  void showListDialog()  {
+    showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0.0))),
+          backgroundColor: Colors.transparent,
+          // shadowColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(40.0),
+          child: DialogLock()
+        );
+      },
     );
   }
 }
