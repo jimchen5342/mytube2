@@ -34,7 +34,7 @@ class _DialogLockState extends State<DialogLock> {
     super.dispose();
   }
 
-  changeState() async {
+  changeState() async { // 沒有效
     try {
       var result = await platform.invokeMethod('lock', '1');
       print(result);
@@ -45,10 +45,40 @@ class _DialogLockState extends State<DialogLock> {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      height: double.infinity, width: double.infinity,
+      color: Colors.transparent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Expanded(flchild: Container()),
+          button(),
+          const SizedBox(height: 30,)
+        ]
+      ),
+    );
+  }
 
-    return Container(height: double.infinity, width: double.infinity,
-      color: Colors.red,
-      
+  Widget button() {
+    return Material(
+      color: Colors.blue,
+      child: InkWell(
+        onLongPress: () {
+          Navigator.pop(context);
+        },
+        // onTap: () async {
+        // },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          child: const Text( "長按解鎖",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          )
+        )
+      )
     );
   }
 }

@@ -1,5 +1,6 @@
 package com.flutter.mytube2;
 
+import android.os.Build;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -33,20 +34,22 @@ public class MainActivity extends AudioServiceActivity {
     MethodChannel.MethodCallHandler mMethodHandle = new MethodChannel.MethodCallHandler() {
         @Override
         public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-             if(call.method.equals("lock")) {
-                 Log.i(TAG, call.arguments.toString());
+            if(call.method.equals("lock")) {
+                // Log.i(TAG, call.arguments.toString());
+                // call.arguments.toString()
+                WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
+                    layoutParams.screenBrightness = 1f;
+                }
+                getWindow().setAttributes(layoutParams);
 
-                 WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                 layoutParams.screenBrightness = 0.0f;
-                 getWindow().setAttributes(layoutParams);
+                result.success("OK");
+            }
+            else if(call.method.equals("information")) {
 
-                 result.success("OK");
-             }
-             else if(call.method.equals("information")) {
-
-             } else {
-                 result.notImplemented();
-             }
+            } else {
+                result.notImplemented();
+            }
         }
     };
 }

@@ -22,13 +22,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   bool permission = false;
   late final WebViewController _controller;
   String url = "";
-  DateTime? lastTime;
+  DateTime lastTime = DateTime.now();
   bool locked = false;
 
   @override
   void initState() {
     super.initState();
-    lastTime = DateTime.now();
     WidgetsBinding.instance.addObserver(this);
 
     EasyLoading.show(status: 'loading...');
@@ -61,14 +60,14 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
               // print("onProgress: $progress");
             },
             onPageStarted: (String url) {
-              print("onPageStarted: $url");
+              // print("onPageStarted: $url");
             },
             onPageFinished: onPageFinished,
             onWebResourceError: (WebResourceError error) {
-             
+              //  print(error);
             },
             onNavigationRequest: (NavigationRequest request) {
-              debugPrint('onNavigationRequest: ${request.url}');
+              // debugPrint('onNavigationRequest: ${request.url}');
               // if (request.url.startsWith('https://www.youtube.com/')) {
               //   debugPrint('blocking navigation to ${request.url}');
               //   return NavigationDecision.prevent;
@@ -79,7 +78,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
              
             },
             onHttpAuthRequest: (HttpAuthRequest request) {
-              // openDialog(request);
+              // debugPrint(request.toString());
             },
           ),
         );
@@ -95,7 +94,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       await setTimeoutAsync(1000 * 1);
       EasyLoading.dismiss();
     });
-
   }
 
   onPageFinished(String url) async {
@@ -122,16 +120,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   void openPlayer(String href) async {
     // print(href);
     // href="/watch?v=PwlvLFb1kgk"; // href = "/watch?v=UxMABs3NsUc";
-    lastTime = null;
     
-    final now = DateTime.now();
     var index = href.indexOf("&t=");
     if(index > -1) {
       href = href.substring(0, index);
     }
     await Navigator.pushNamed(context, '/player', arguments: href.trim());
-    reload(now);
-    lastTime = DateTime.now();
   }
 
   void setLeast() async { // 最新上傳
@@ -203,14 +197,16 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
 
   void reload(DateTime last) async {
     Duration difference = DateTime.now().difference(last);
-    if(difference.inMinutes >= 30) {
+    if(difference.inMinutes >= 120) {
       EasyLoading.show(status: 'loading...');
       url = "";
       _controller.loadRequest(Uri.parse("https://m.youtube.com/"));
       await setTimeoutAsync(1000 * 1);
       EasyLoading.dismiss();
+      lastTime = DateTime.now();
     }
   }
+  
   initial() async {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     AndroidDeviceInfo build = await deviceInfoPlugin.androidInfo;
@@ -251,13 +247,11 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     // print("AppLifecycleState: $state, ${DateTime.now()}");
-
-    if(lastTime == null) return;
     if(AppLifecycleState.resumed == state) {
-      reload(lastTime!);
+      reload(lastTime);
     }
     else if(AppLifecycleState.paused == state) {
-      lastTime = DateTime.now();
+      // lastTime = DateTime.now();
     }
   }
   
@@ -293,13 +287,15 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
           backgroundColor: Colors.blue, 
           // backgroundColor: const Color.fromRGBO(192, 25, 33, 0), 
         ),
-        body:PopScope(
+        body: PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
             if (didPop) {
               return;
             }
-            if(await _controller.currentUrl() == "https://m.youtube.com/") {
+            if(locked == true) {
+
+            } else if(await _controller.currentUrl() == "https://m.youtube.com/") {
               exit(0);
             } else {
               await _controller.goBack();
@@ -318,19 +314,21 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
     );
   }
 
-  void showListDialog()  {
-    showDialog<int>(
+  void showListDialog() async {
+    locked = true;
+    await showDialog<int>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(0.0))),
           backgroundColor: Colors.transparent,
           // shadowColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(40.0),
+          insetPadding: const EdgeInsets.all(0.0),
           child: DialogLock()
         );
       },
     );
+    locked = false;
   }
 }
 
