@@ -39,7 +39,7 @@ public class MainActivity extends AudioServiceActivity {
                 // call.arguments.toString()
                 WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
-                    layoutParams.screenBrightness = 1f;
+                    layoutParams.screenBrightness = 0.1f;
                 }
                 getWindow().setAttributes(layoutParams);
 

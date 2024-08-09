@@ -48,6 +48,10 @@ class _DialogLockState extends State<DialogLock> {
     return Container(
       height: double.infinity, width: double.infinity,
       color: Colors.transparent,
+            // decoration: BoxDecoration(
+      //   border: Border.all(color: Colors.blueAccent),
+      //   borderRadius: BorderRadius.circular(10),
+      // ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,7 +66,11 @@ class _DialogLockState extends State<DialogLock> {
 
   Widget button() {
     return Material(
-      color: Colors.blue,
+      color: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: const BorderSide(color: Colors.red, width: 1),
+      ),
       child: InkWell(
         onLongPress: () {
           Navigator.pop(context);
@@ -73,7 +81,7 @@ class _DialogLockState extends State<DialogLock> {
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           child: const Text( "長按解鎖",
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.red,
               fontSize: 20,
             ),
           )
