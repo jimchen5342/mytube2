@@ -15,7 +15,7 @@ class _DialogLockState extends State<DialogLock> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await changeState();
+      await changeScreenBrightness("1");
     });
   }
 
@@ -30,14 +30,14 @@ class _DialogLockState extends State<DialogLock> {
   }
 
   @override
-  dispose() {
+  dispose() async {
     super.dispose();
+    await changeScreenBrightness("0");
   }
 
-  changeState() async { // 沒有效
+  changeScreenBrightness(state) async {
     try {
-      var result = await platform.invokeMethod('lock', '1');
-      print(result);
+      var result = await platform.invokeMethod('ScreenBrightness', state);
     } on PlatformException catch (e) {
       print("Failed to show toast: '${e.message}'.");
     }
@@ -45,22 +45,25 @@ class _DialogLockState extends State<DialogLock> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity, width: double.infinity,
-      color: Colors.transparent,
-            // decoration: BoxDecoration(
-      //   border: Border.all(color: Colors.blueAccent),
-      //   borderRadius: BorderRadius.circular(10),
-      // ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Expanded(flchild: Container()),
-          button(),
-          const SizedBox(height: 30,)
-        ]
-      ),
+    return PopScope(
+      canPop: false,
+      // onPopInvoked: (bool didPop) async {
+      //   if (didPop) {
+      //     return;
+      //   }
+      // },
+      child: Container(
+        height: double.infinity, width: double.infinity,
+        color: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            button(),
+            const SizedBox(height: 30,)
+          ]
+        ),
+      )
     );
   }
 
@@ -78,8 +81,8 @@ class _DialogLockState extends State<DialogLock> {
         // onTap: () async {
         // },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          child: const Text( "長按解鎖",
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
+          child: const Text("長按解鎖",
             style: TextStyle(
               color: Colors.red,
               fontSize: 20,

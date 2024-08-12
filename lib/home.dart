@@ -204,6 +204,9 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       await setTimeoutAsync(1000 * 1);
       EasyLoading.dismiss();
       lastTime = DateTime.now();
+      if(locked == true) {
+        Navigator.of(context).pop();
+      }
     }
   }
   
@@ -230,7 +233,6 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   @override
   void reassemble() async { // develope mode
     super.reassemble();
-        // await  PlayList.trim(await Archive.home());
   }
 
   @override
@@ -316,6 +318,8 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
 
   void showListDialog() async {
     locked = true;
+    setState(()=>{});
+    
     await showDialog<int>(
       context: context,
       builder: (BuildContext context) {
@@ -329,6 +333,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       },
     );
     locked = false;
+    setState((){});
   }
 }
 
