@@ -17,7 +17,6 @@ import com.ryanheise.audioservice.AudioServiceActivity;
 
 public class MainActivity extends AudioServiceActivity {
     String TAG = "MyTube2";
-    int brightness = 0;
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
@@ -37,13 +36,13 @@ public class MainActivity extends AudioServiceActivity {
         @Override
         public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
             if(call.method.equals("ScreenBrightness")) {
-               if(call.arguments.toString().equals("1")) {
-                   brightness = getScreenBrightness();
-                   setScreenBrightness(0);
-               } else {
-                   setScreenBrightness(brightness);
-               }
-               result.success("OK");
+                Log.i(TAG, "ScreenBrightness: " + call.arguments.toString());
+                if(call.arguments.toString().equals("1")) {
+                   setScreenBrightness(0.8f);
+                } else {
+                   setScreenBrightness(0f);
+                }
+                result.success("OK");
             }
             else if(call.method.equals("information")) {
 
@@ -53,41 +52,11 @@ public class MainActivity extends AudioServiceActivity {
         }
     };
 
-    int getScreenBrightness() {
-        int brightness = 0;
-        try {
-            // 讀取當前系統亮度設置（範圍是 0 - 255）
-            brightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-        } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
-        }
-        return brightness;
-    }
-
-    void setScreenBrightness(int brightness) {
+    void setScreenBrightness(Float brightness) {
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
-            layoutParams.screenBrightness = brightness / 255.0f;
+            layoutParams.screenBrightness = brightness == 0 ? 0 : 200.0f;
         }
         getWindow().setAttributes(layoutParams);
-
-
-        /* 還沒試過
-        // 設定亮度範圍必須在 0 到 255 之間
-        if (brightness < 0) brightness = 0;
-        if (brightness > 255) brightness = 255;
-
-        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-        layoutParams.screenBrightness = brightness / 255.0f;
-        getWindow().setAttributes(layoutParams);
-
-        // 更新系統亮度設置
-        Settings.System.putInt(
-                getWindow().getContext().getContentResolver(),
-                Settings.System.SCREEN_BRIGHTNESS,
-                brightness
-        );
-
-         */
     }
 }

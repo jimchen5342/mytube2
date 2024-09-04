@@ -45,7 +45,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 34
         versionCode 1
-        versionName "2024-08-12 08:30"
+        versionName "2024-09-04 11:30"
         setProperty("archivesBaseName", "MyTube2")
     }
 

@@ -10,6 +10,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:mytube2/system/module.dart';
 import 'package:mytube2/system/system.dart';
 import 'package:mytube2/DialogLock.dart';
+import 'package:flutter/services.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -24,6 +25,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
   String url = "";
   DateTime lastTime = DateTime.now();
   bool locked = false;
+  static const platform = MethodChannel('com.flutter/MethodChannel');
 
   @override
   void initState() {
@@ -206,6 +208,12 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
       lastTime = DateTime.now();
       if(locked == true) {
         Navigator.of(context).pop();
+      } else {
+        try {
+          var result = await platform.invokeMethod('ScreenBrightness', "1");
+        } on PlatformException catch (e) {
+          print("Failed to show toast: '${e.message}'.");
+        }
       }
     }
   }
@@ -282,7 +290,7 @@ class _HomeState extends State<Home>  with WidgetsBindingObserver {
             IconButton(
               icon: const Icon( Icons.refresh_sharp, color: Colors.white),
               onPressed: () {
-                reload(DateTime.parse('2024-01-01 00:00:00.000'));
+                reload(DateTime.parse('2000-01-01 00:00:00.000'));
               },
             )
           ],

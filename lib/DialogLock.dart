@@ -15,7 +15,7 @@ class _DialogLockState extends State<DialogLock> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await changeScreenBrightness("1");
+      await changeScreenBrightness("0");
     });
   }
 
@@ -32,7 +32,7 @@ class _DialogLockState extends State<DialogLock> {
   @override
   dispose() async {
     super.dispose();
-    await changeScreenBrightness("0");
+    await changeScreenBrightness("1");
   }
 
   changeScreenBrightness(state) async {
@@ -81,7 +81,7 @@ class _DialogLockState extends State<DialogLock> {
         // onTap: () async {
         // },
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 60),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 100),
           child: const Text("長按解鎖",
             style: TextStyle(
               color: Colors.red,
